@@ -10,7 +10,7 @@ int PCB::globalLock = 0;
 
 PCB::PCB(Thread* thread, StackSize stackSize, Time timeSlice) : thread(thread),stackSize(stackSize),timeSlice(timeSlice){
 	id = ID++;
-	lock = 0;
+	localLock = 0;
 	initStack(stackSize);
 }
 
@@ -54,4 +54,8 @@ void PCB::setStatus(Status status)
 PCB* PCB::getRuning()
 {
 	return running;
+}
+
+void PCB::wrapper() {
+
 }

@@ -2,6 +2,8 @@
 #define __BLCKLIST_H_
 
 #include "include.h"
+#include "PCB.h"
+#include "SCHEDULE.H"
 #include <iostream.h>
 
 class BlockList {
@@ -9,7 +11,7 @@ class BlockList {
 		BlockList();
 		~BlockList();
 		BlockList& insert(PCB *pcb);
-		PCB* getAndRemove();
+		void resumeAll();
 		int isEmpty();
 	private:
 		typedef struct Elem{

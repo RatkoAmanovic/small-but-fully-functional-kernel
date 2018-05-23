@@ -30,7 +30,7 @@ private:
 	static PCB *running;
 
 
-	volatile int lock;
+	volatile int localLock;
 
 	unsigned *stack;
 	volatile unsigned stackSegment;

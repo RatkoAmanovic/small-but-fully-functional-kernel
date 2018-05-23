@@ -7,3 +7,12 @@ Semaphore::Semaphore(int init) {
 Semaphore::~Semaphore() {
 }
 
+int Semaphore::wait(int i)
+{
+	return 0;
+}
+
+void Semaphore::signal()
+{
+	return;
+}

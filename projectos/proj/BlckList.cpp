@@ -3,14 +3,7 @@
 BlockList::BlockList():head(NULL), tail(NULL) {}
 
 BlockList::~BlockList() {
-	if(isEmpty()) return;
-	Elem *curr = head, *prev = NULL;
-	while(curr!=NULL) {
-		prev = curr;
-		curr = curr->next;
-		delete prev;
-	}
-	return;
+	resumeAll();
 }
 
 int BlockList::isEmpty() {
@@ -20,7 +13,7 @@ int BlockList::isEmpty() {
 BlockList& BlockList::insert(PCB *pcb)
 {
 	lock;
-	Elem* newElem(pcb);
+	Elem* newElem = new Elem(pcb);
 	if(head == NULL) {
 		head = newElem;
 		tail = head;
@@ -33,8 +26,19 @@ BlockList& BlockList::insert(PCB *pcb)
 	return *this;
 }
 
-PCB* BlockList::getAndRemove()
-{
-	if(isEmpty()) return NULL;
-
+void BlockList::resumeAll(){
+	if(isEmpty()) return;
+	Elem *curr = head, *prev = NULL;
+	while(curr!=NULL) {
+		curr->pcb->setStatus(PCB::READY);
+		Scheduler::put(curr->pcb);
+		prev = curr;
+		curr = curr->next;
+		delete prev;
+	}
+	curr = NULL;
+	prev = NULL;
+	head = NULL;
+	tail = NULL;
+	return;
 }
