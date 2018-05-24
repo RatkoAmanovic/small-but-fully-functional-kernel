@@ -1,12 +1,15 @@
 #include "PCB.h"
 #include <dos.h>
 #include "Thread.h"
+#include "BlckList.h"
+#include "SlepList.h"
 
 unsigned PCB::ID = 0;
 const StackSize PCB::MIN_PCB_STACK_SIZE = 0x400;
 const StackSize PCB::MAX_PCB_STACK_SIZE = 0x1000;
 PCB* PCB::running = NULL;
 int PCB::globalLock = 0;
+SleepList PCB::sleepingList = SleepList();
 
 PCB::PCB(Thread* thread, StackSize stackSize, Time timeSlice) : thread(thread),stackSize(stackSize),timeSlice(timeSlice){
 	id = ID++;
@@ -46,16 +49,41 @@ PCB::~PCB()
 	delete[] stack;
 }
 
-void PCB::setStatus(Status status)
-{
+void PCB::setStatus(Status status) {
 	this->status = status;
 }
 
-PCB* PCB::getRuning()
-{
+PCB* PCB::getRuning() {
 	return running;
 }
 
 void PCB::wrapper() {
+	running->thread->run();
+	lock;
+	running->setStatus(PCB::FINISHED);
+	running->blockedList.resumeAll();
+	dispatch();
+}
 
+void PCB::waitToComplete() {
+	lock;
+	if(running == this || status==PCB::FINISHED)//TODO: add idle thread
+	{
+		unlock;
+		return;
+	}
+	running->setStatus(PCB::BLOCKED);
+	blockedList.insert(running);
+	dispatch();
+	unlock;
+}
+
+void PCB::sleep(Time timeToSleep) {
+	lock;
+	if(timeToSleep <= 0)
+		return;
+	running->setStatus(PCB::SLEEPING);
+	sleepingList.insert(running, timeToSleep);
+	dispatch();
+	unlock;
 }

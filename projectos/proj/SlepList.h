@@ -1,17 +1,26 @@
-/*
- * SlepList.h
- *
- *  Created on: May 23, 2018
- *      Author: OS1
- */
-
 #ifndef __SLEPLIST_H_
 #define __SLEPLIST_H_
 
+#include <iostream.h>
+#include "include.h"
+
+class PCB;
+
 class SleepList {
-public:
-	SleepList();
-	~SleepList();
+	public:
+		SleepList();
+		~SleepList();
+		SleepList& insert(PCB *pcb, Time timeToSleep);
+		int isEmpty();
+		void tick();
+	private:
+		typedef struct Elem{
+			Time timeLeft;
+			PCB *pcb;
+			Elem *next;
+			Elem(PCB *pcb, Time timeToSleep) : pcb(pcb), timeLeft(timeToSleep), next(NULL) {}
+		};
+		Elem *head;
 };
 
 #endif /* __SLEPLIST_H_ */

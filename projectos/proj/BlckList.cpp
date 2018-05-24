@@ -1,4 +1,8 @@
 #include "BlckList.h"
+#include "PCB.h"
+#include "include.h"
+#include "SCHEDULE.H"
+#include <iostream.h>
 
 BlockList::BlockList():head(NULL), tail(NULL) {}
 
@@ -41,4 +45,22 @@ void BlockList::resumeAll(){
 	head = NULL;
 	tail = NULL;
 	return;
+}
+
+PCB* BlockList::getFirst()
+{
+	if(isEmpty()) return NULL;
+	PCB *pcb = head->pcb;
+	if(head->next==NULL)
+	{
+		delete head;
+		head = NULL;
+	}
+	else
+	{
+		Elem *temp = head;
+		head = head->next;
+		delete temp;
+	}
+	return pcb;
 }

@@ -1,5 +1,5 @@
-#ifndef __SEMAPHOR_H_
-#define __SEMAPHOR_H_
+#ifndef _semaphor_h_
+#define _semaphor_h_
 
 #include "include.h"
 
@@ -15,4 +15,4 @@ class Semaphore {
 	private:
 		KernelSem* myImpl;
 };
-#endif //__SEMAPHOR_H_
+#endif

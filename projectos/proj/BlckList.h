@@ -1,10 +1,9 @@
 #ifndef __BLCKLIST_H_
 #define __BLCKLIST_H_
 
-#include "include.h"
-#include "PCB.h"
-#include "SCHEDULE.H"
 #include <iostream.h>
+
+class PCB;
 
 class BlockList {
 	public:
@@ -13,6 +12,7 @@ class BlockList {
 		BlockList& insert(PCB *pcb);
 		void resumeAll();
 		int isEmpty();
+		PCB* getFirst();
 	private:
 		typedef struct Elem{
 			PCB *pcb;

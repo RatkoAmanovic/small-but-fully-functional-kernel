@@ -1,5 +1,5 @@
-#ifndef __THREAD_H_
-#define __THREAD_H_
+#ifndef _thread_h_
+#define _thread_h_
 
 #include "include.h"
 #include <iostream.h>
@@ -26,4 +26,4 @@ class Thread {
 
 void dispatch ();
 
-#endif /* __THREAD_H_ */
+#endif

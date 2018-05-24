@@ -4,15 +4,19 @@
 #include <iostream.h>
 #include <dos.h>
 #include "include.h"
+#include "BlckList.h"
+#include "SlepList.h"
 
 class PCB
 {
 public:
 
-	friend Thread;
+	friend class Thread;
+	friend class ContextSwitch;
+	friend class KernelSem;
 
 	enum Status{
-		NEW,RUNNING,READY,BLOCKED,FINISHED
+		NEW,RUNNING,READY,SLEEPING,BLOCKED,FINISHED
 	};
 
 	PCB(Thread *thread, StackSize stackSize, Time timeSlice);
@@ -21,6 +25,10 @@ public:
 	static PCB* getRuning();
 	static int globalLock;
 
+	 void start();
+	 void waitToComplete();
+	 static void sleep(Time timeToSleep);
+
 private:
 	static const StackSize MIN_PCB_STACK_SIZE;
 	static const StackSize MAX_PCB_STACK_SIZE;
@@ -28,7 +36,10 @@ private:
 	static unsigned ID;
 	unsigned id;
 	static PCB *running;
+	volatile Status status;
 
+	BlockList blockedList;
+	static SleepList sleepingList;
 
 	volatile int localLock;
 
@@ -36,15 +47,14 @@ private:
 	volatile unsigned stackSegment;
 	volatile unsigned stackPointer;
 	volatile unsigned basePointer;
-	volatile Status status;
 	Thread *thread;
 	StackSize stackSize;
 	Time timeSlice;
 
-
-
 	void initStack(StackSize stackSize);
 
-	static void wrapper();//pokrece nit
+	static void wrapper();//pokrece i zavrsava nit
+
+
 };
 #endif //__PCB_H_
