@@ -2,23 +2,24 @@
 #include "PCB.h"
 #include "include.h"
 #include "SCHEDULE.H"
+#include "CSwitch.h"
 #include <iostream.h>
 
-BlockList::BlockList():head(NULL), tail(NULL) {}
+BlockList::BlockList():head(0), tail(0) {}
 
 BlockList::~BlockList() {
 	resumeAll();
 }
 
 int BlockList::isEmpty() {
-	return head == NULL;
+	return head == 0;
 }
 
 BlockList& BlockList::insert(PCB *pcb)
 {
 	lock;
 	Elem* newElem = new Elem(pcb);
-	if(head == NULL) {
+	if(head == 0) {
 		head = newElem;
 		tail = head;
 	}
@@ -32,29 +33,29 @@ BlockList& BlockList::insert(PCB *pcb)
 
 void BlockList::resumeAll(){
 	if(isEmpty()) return;
-	Elem *curr = head, *prev = NULL;
-	while(curr!=NULL) {
+	Elem *curr = head, *prev = 0;
+	while(curr!=0) {
 		curr->pcb->setStatus(PCB::READY);
 		Scheduler::put(curr->pcb);
 		prev = curr;
 		curr = curr->next;
 		delete prev;
 	}
-	curr = NULL;
-	prev = NULL;
-	head = NULL;
-	tail = NULL;
+	curr = 0;
+	prev = 0;
+	head = 0;
+	tail = 0;
 	return;
 }
 
 PCB* BlockList::getFirst()
 {
-	if(isEmpty()) return NULL;
+	if(isEmpty()) return 0;
 	PCB *pcb = head->pcb;
-	if(head->next==NULL)
+	if(head->next==0)
 	{
 		delete head;
-		head = NULL;
+		head = 0;
 	}
 	else
 	{

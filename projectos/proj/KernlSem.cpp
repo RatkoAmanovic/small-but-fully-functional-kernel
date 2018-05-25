@@ -3,12 +3,13 @@
 #include "PCB.h"
 #include "SCHEDULE.H"
 #include "Thread.h"
+#include "CSwitch.h"
 
 KernelSem::KernelSem(int init) : value(init) {}
 
 KernelSem::~KernelSem() {
 	PCB *pcb = blockedList.getFirst();
-	while(pcb!=NULL)
+	while(pcb!=0)
 		pcb = blockedList.getFirst();
 	delete pcb;
 }
@@ -49,7 +50,7 @@ void KernelSem::block() {
 void KernelSem::deblock() {
 	lock;
 	PCB *pcb = blockedList.getFirst();
-	if(pcb!=NULL) {
+	if(pcb!=0) {
 		pcb->setStatus(PCB::READY);
 		Scheduler::put(pcb);
 	}

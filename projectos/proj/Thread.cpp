@@ -33,7 +33,7 @@ void Thread::sleep(Time timeToSleep) {
 void dispatch() {
 	asm cli;
 	ContextSwitch::requestSwitch();
-	//timer();TODO
+	ContextSwitch::timer();
 	asm sti;
 //	asm pushf;
 //	asm cli;

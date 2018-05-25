@@ -17,7 +17,7 @@ class BlockList {
 		typedef struct Elem{
 			PCB *pcb;
 			Elem *next;
-			Elem(PCB *pcb) : pcb(pcb), next(NULL) {};
+			Elem(PCB *pcb) : pcb(pcb), next(0) {};
 		};
 		Elem *head, *tail;
 };

@@ -3,25 +3,25 @@
 #include "include.h"
 #include "SCHEDULE.H"
 
-SleepList::SleepList():head(NULL) {}
+SleepList::SleepList():head(0) {}
 
 SleepList& SleepList::insert(PCB *pcb, Time timeToSleep) {
 	if(timeToSleep <= 0)
 		return *this;
 	Elem* newElem = new Elem(pcb, timeToSleep);
-	if(head == NULL)
+	if(head == 0)
 		head = newElem;
 	else {
-		Elem *curr = head, *prev = NULL;
+		Elem *curr = head, *prev = 0;
 		while(curr->timeLeft<=newElem->timeLeft) {
 			newElem->timeLeft -= curr->timeLeft;
 			prev = curr;
 			curr = curr->next;
-			if(curr == NULL)
+			if(curr == 0)
 				break;
 		}
 
-		if (prev == NULL)
+		if (prev == 0)
 		{
 			newElem->next = head;
 			head = newElem;
@@ -31,7 +31,7 @@ SleepList& SleepList::insert(PCB *pcb, Time timeToSleep) {
 			newElem->next = curr;
 		}
 
-		if(curr!=NULL)
+		if(curr!=0)
 			curr->timeLeft -= newElem->timeLeft;
 
 	}
@@ -40,7 +40,7 @@ SleepList& SleepList::insert(PCB *pcb, Time timeToSleep) {
 }
 
 int SleepList::isEmpty() {
-	return head == NULL;
+	return head == 0;
 }
 
 void SleepList::tick() {
@@ -54,12 +54,18 @@ void SleepList::tick() {
 		Elem *temp = head;
 		head = head->next;
 		delete temp;
-		if (head == NULL)
+		if (head == 0)
 			break;
 	}
 }
 
 SleepList::~SleepList() {
-	// TODO Auto-generated destructor stub
+	Elem *curr = head, *prev = 0;
+	while(curr!=0)
+	{
+		prev = curr;
+		curr = curr->next;
+		delete prev;
+	}
 }
 

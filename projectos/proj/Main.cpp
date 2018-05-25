@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
 
 	// Prepare the PCB for the main function
 	// It doesn't allocate a stack, and operates on the system stack
-	PCB *main_pcb = new PCB(NULL, 0, 1);
+	PCB *main_pcb = new PCB(0, 0, 1);
 	main_pcb->setStatus(PCB::RUNNING);
 
 

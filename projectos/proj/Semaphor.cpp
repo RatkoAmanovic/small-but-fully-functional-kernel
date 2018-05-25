@@ -2,6 +2,7 @@
 #include "include.h"
 #include "KernlSem.h"
 #include "PCB.h"
+#include "CSwitch.h"
 
 Semaphore::Semaphore(int init) {
 	lock;

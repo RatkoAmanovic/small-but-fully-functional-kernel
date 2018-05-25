@@ -18,7 +18,7 @@ class SleepList {
 			Time timeLeft;
 			PCB *pcb;
 			Elem *next;
-			Elem(PCB *pcb, Time timeToSleep) : pcb(pcb), timeLeft(timeToSleep), next(NULL) {}
+			Elem(PCB *pcb, Time timeToSleep) : pcb(pcb), timeLeft(timeToSleep), next(0) {}
 		};
 		Elem *head;
 };

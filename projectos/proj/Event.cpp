@@ -1,17 +1,30 @@
-/*
- * Event.cpp
- *
- *  Created on: May 21, 2018
- *      Author: OS1
- */
-
 #include "Event.h"
+#include "KernelEv.h"
+#include "PCB.h"
+#include "CSwitch.h"
+#include "IVTEntry.h"
 
 Event::Event(IVTNo ivtNo) {
-	myImpl = 0;
+	lock;
+	myImpl = new KernelEv(ivtNo);
+	unlock;
 }
 
 Event::~Event() {
-	// TODO Auto-generated destructor stub
+	lock;
+	delete myImpl;
+	unlock;
+}
+
+void Event::wait() {
+	lock;
+	myImpl->wait();
+	unlock;
+}
+
+void Event::signal() {
+	lock;
+	myImpl->signal();
+	unlock;
 }
 

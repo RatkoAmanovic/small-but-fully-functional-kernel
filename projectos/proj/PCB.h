@@ -6,6 +6,7 @@
 #include "include.h"
 #include "BlckList.h"
 #include "SlepList.h"
+#include "IdleThrd.h"
 
 class PCB
 {
@@ -14,6 +15,7 @@ public:
 	friend class Thread;
 	friend class ContextSwitch;
 	friend class KernelSem;
+	friend class KernelEv;
 
 	enum Status{
 		NEW,RUNNING,READY,SLEEPING,BLOCKED,FINISHED
@@ -24,6 +26,7 @@ public:
 	void setStatus(Status status);
 	static PCB* getRuning();
 	static int globalLock;
+	static IdleThread idleThread;
 
 	 void start();
 	 void waitToComplete();
