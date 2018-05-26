@@ -10,54 +10,53 @@
 
 class PCB
 {
-public:
+	public:
 
-	friend class Thread;
-	friend class ContextSwitch;
-	friend class KernelSem;
-	friend class KernelEv;
+		friend class Thread;
+		friend class ContextSwitch;
+		friend class KernelSem;
+		friend class KernelEv;
+		friend int main(int argc, char *argv[]);
 
-	enum Status{
-		NEW,RUNNING,READY,SLEEPING,BLOCKED,FINISHED
-	};
+		enum Status{
+			NEW,RUNNING,READY,SLEEPING,BLOCKED,FINISHED
+		};
 
-	PCB(Thread *thread, StackSize stackSize, Time timeSlice);
-	~PCB();
-	void setStatus(Status status);
-	static PCB* getRuning();
-	static int globalLock;
-	static IdleThread idleThread;
+		PCB(Thread *thread, StackSize stackSize, Time timeSlice);
+		~PCB();
+		void setStatus(Status status);
+		static PCB* getRuning();
+		static int globalLock;
+		static IdleThread idleThread;
 
-	 void start();
-	 void waitToComplete();
-	 static void sleep(Time timeToSleep);
+		 void start();
+		 void waitToComplete();
+		 static void sleep(Time timeToSleep);
 
-private:
-	static const StackSize MIN_PCB_STACK_SIZE;
-	static const StackSize MAX_PCB_STACK_SIZE;
+	private:
+		static const StackSize MIN_PCB_STACK_SIZE;
+		static const StackSize MAX_PCB_STACK_SIZE;
 
-	static unsigned ID;
-	unsigned id;
-	static PCB *running;
-	volatile Status status;
+		static unsigned ID;
+		unsigned id;
+		static PCB *running;
+		volatile Status status;
 
-	BlockList blockedList;
-	static SleepList sleepingList;
+		BlockList blockedList;
+		static SleepList sleepingList;
 
-	volatile int localLock;
+		volatile int localLock;
 
-	unsigned *stack;
-	volatile unsigned stackSegment;
-	volatile unsigned stackPointer;
-	volatile unsigned basePointer;
-	Thread *thread;
-	StackSize stackSize;
-	Time timeSlice;
+		unsigned *stack;
+		volatile unsigned stackSegment;
+		volatile unsigned stackPointer;
+		volatile unsigned basePointer;
+		Thread *thread;
+		StackSize stackSize;
+		Time timeSlice;
 
-	void initStack(StackSize stackSize);
+		void initStack(StackSize stackSize);
 
-	static void wrapper();//pokrece i zavrsava nit
-
-
+		static void wrapper();//pokrece i zavrsava nit
 };
 #endif //__PCB_H_

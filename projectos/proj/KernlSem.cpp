@@ -14,7 +14,7 @@ KernelSem::~KernelSem() {
 	delete pcb;
 }
 
-int KernelSem::wait(int toBlock) {
+int KernelSem::wait() {
 	int temp;
 	lock;
 	value--;

@@ -5,6 +5,9 @@
 
 class ContextSwitch {
 public:
+
+	friend class PCB;
+
 	static void requestSwitch();
 	static void interrupt timer(...);
 	static void inic();

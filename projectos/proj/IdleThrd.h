@@ -4,10 +4,10 @@
 #include "Thread.h"
 
 class IdleThread : public Thread{
-public:
-	IdleThread();
-	~IdleThread();
-	void run();
+	public:
+		IdleThread();
+		~IdleThread();
+		void run();
 };
 
 #endif /* __IDLETHRD_H_ */

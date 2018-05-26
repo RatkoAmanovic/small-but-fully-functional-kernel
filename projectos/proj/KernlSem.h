@@ -7,7 +7,7 @@ class KernelSem {
 	public:
 		KernelSem(int init);
 		~KernelSem();
-		int wait (int toBlock);
+		int wait ();
 		void signal();
 		int val () const; // Returns the current value of the semaphore
 	private:

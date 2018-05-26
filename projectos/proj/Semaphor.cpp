@@ -24,7 +24,7 @@ int Semaphore::wait(int toBlock)
 		if (val()<=0)
 			return -1;
 	}
-	temp = myImpl->wait(toBlock);
+	temp = myImpl->wait();
 	unlock;
 	return temp;
 }
