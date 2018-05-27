@@ -12,7 +12,8 @@ class BlockList {
 		BlockList& insert(PCB *pcb);
 		void resumeAll();
 		int isEmpty();
-		PCB* getFirst();
+		PCB* takeFirst();
+		PCB* getById(int id);
 	private:
 		typedef struct Elem{
 			PCB *pcb;

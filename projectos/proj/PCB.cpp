@@ -4,6 +4,7 @@
 #include "BlckList.h"
 #include "SlepList.h"
 #include "CSwitch.h"
+#include "IdleThrd.h"
 
 unsigned PCB::ID = 0;
 const StackSize PCB::MIN_PCB_STACK_SIZE = 0x400;
@@ -11,12 +12,16 @@ const StackSize PCB::MAX_PCB_STACK_SIZE = 0x1000;
 PCB* PCB::running = NULL;
 int PCB::globalLock = 0;
 SleepList PCB::sleepingList = SleepList();
-IdleThread PCB::idleThread = IdleThread();
+BlockList PCB::pcbList = BlockList();
 
-PCB::PCB(Thread* thread, StackSize stackSize, Time timeSlice) : thread(thread),stackSize(stackSize),timeSlice(timeSlice){
+PCB::PCB(Thread* thread, StackSize stackSize, Time timeSlice, char n) : thread(thread),stackSize(stackSize),timeSlice(timeSlice){
+	name = n;
 	id = ID++;
 	localLock = 0;
 	initStack(stackSize);
+	if(id == 0)
+	pcbList.insert(this);
+	cout<<"PCB::const pcbList Elem id = "<<this->getId()<<endl;
 }
 
 void PCB::initStack(StackSize stackSize)
@@ -60,6 +65,7 @@ PCB* PCB::getRuning() {
 }
 
 void PCB::wrapper() {
+	cout<<"PCB::wrapper aj pisi se majke ti"<<endl;
 	running->thread->run();
 	lock;
 	running->setStatus(PCB::FINISHED);
@@ -69,7 +75,7 @@ void PCB::wrapper() {
 
 void PCB::waitToComplete() {
 	lock;
-	if(running == this || status==PCB::FINISHED || running->thread == &(idleThread))//TODO: add idle thread
+	if(running == this || status==PCB::FINISHED || running->thread == IdleThread::getIdleThread())//TODO: add idle thread
 	{
 		unlock;
 		return;
@@ -88,4 +94,17 @@ void PCB::sleep(Time timeToSleep) {
 	sleepingList.insert(running, timeToSleep);
 	dispatch();
 	unlock;
+}
+
+PCB* PCB::getPCBbyId(int id) {
+	cout<<"PCB::getPCBbyId started"<<endl;
+	return PCB::pcbList.getById(id);
+}
+
+int PCB::getId() {
+	return id;
+}
+
+int PCB::getIdleThreadId() {
+	return IdleThread::idleThread->getId();
 }

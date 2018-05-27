@@ -5,9 +5,15 @@
 
 class IdleThread : public Thread{
 	public:
+
+		friend class PCB;
+
 		IdleThread();
 		~IdleThread();
 		void run();
+		static IdleThread* getIdleThread();
+	private:
+		static IdleThread *idleThread;
 };
 
 #endif /* __IDLETHRD_H_ */

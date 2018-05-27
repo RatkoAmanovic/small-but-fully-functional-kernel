@@ -11,32 +11,44 @@
 int main(int argc, char *argv[]) {
 
 	cout << "Hello World!" << endl;
-
 //	MainThread::mainThread->setUserMainArguments(argc, argv);
 
-//	PCB* mainPCB = new PCB(0,0,1);
-//	mainPCB->setStatus(PCB::RUNNING);
-//	PCB::running = mainPCB;
+	PCB* mainPCB = new PCB(0,0,1, 'm');
+	mainPCB->setStatus(PCB::RUNNING);
+	PCB::running = mainPCB;
+
+	IdleThread::getIdleThread();
+
+	cout<<"Main::main id = 0 = "<<PCB::pcbList.getById(0)->getId()<<endl;
+	cout<<"Main::main id = 1 = "<<PCB::pcbList.getById(1)->getId()<<endl;
 
 	ContextSwitch::inic();
 
-	ThreadA* niti = new ThreadA[1];
+	cout <<"CS::inic()"<<endl;
 
-	for (int i = 0; i < 1; ++i) {
-		niti[i].start();
-	}
 
-	for (int j = 0; j < 1; ++j) {
-		niti[j].waitToComplete();
-	}
-//	MainThread::mainThread->waitToComplete();
 
-//	int returnValue = MainThread::userMainReturnValue;
+	ThreadA* niti = new ThreadA();
+
+	cout <<"TA niti"<<endl;
+
+
+	niti->start();
+	cout <<"Start niti"<<endl;
+
+	dispatch();
+
+	cout<<"WTC niti"<<endl;
+
+	//MainThread::mainThread->waitToComplete();
+
+	int returnValue = MainThread::userMainReturnValue;
 
 	ContextSwitch::restore();
 
+	cout <<"CS::restore"<<endl;
 //	delete mainPCB;
-	delete MainThread::mainThread;
+//	delete MainThread::mainThread;
 
 	cout << endl << "Good Bye World!" << endl;
 

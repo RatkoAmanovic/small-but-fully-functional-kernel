@@ -16,9 +16,10 @@ class Thread {
 		 void waitToComplete();
 		 virtual ~Thread();
 		 static void sleep(Time timeToSleep);
+		 int getId();
 	protected:
 		 friend class PCB;
-		 Thread (StackSize stackSize = defaultStackSize, Time timeSlice = defaultTimeSlice);
+		 Thread (StackSize stackSize = defaultStackSize, Time timeSlice = defaultTimeSlice, char n = ' ');
 		 virtual void run() {}
 	private:
 		 PCB* myPCB;

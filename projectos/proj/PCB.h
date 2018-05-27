@@ -22,16 +22,18 @@ class PCB
 			NEW,RUNNING,READY,SLEEPING,BLOCKED,FINISHED
 		};
 
-		PCB(Thread *thread, StackSize stackSize, Time timeSlice);
+		PCB(Thread *thread, StackSize stackSize, Time timeSlice, char n = ' ');
 		~PCB();
 		void setStatus(Status status);
 		static PCB* getRuning();
 		static int globalLock;
-		static IdleThread idleThread;
 
 		 void start();
 		 void waitToComplete();
 		 static void sleep(Time timeToSleep);
+		 static PCB* getPCBbyId(int id);
+		 int getId();
+		 static int getIdleThreadId();
 
 	private:
 		static const StackSize MIN_PCB_STACK_SIZE;
@@ -39,11 +41,14 @@ class PCB
 
 		static unsigned ID;
 		unsigned id;
+
+		char name;
 		static PCB *running;
 		volatile Status status;
 
 		BlockList blockedList;
 		static SleepList sleepingList;
+		static BlockList pcbList;
 
 		volatile int localLock;
 

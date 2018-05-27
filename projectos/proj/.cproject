@@ -14,7 +14,7 @@
 					<folderInfo id="0.912332056." name="/" resourcePath="">
 						<toolChain id="bcc4Eclipse.toolChain.795444616" name="bccToolchain" superClass="bcc4Eclipse.toolChain">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.PE" id="bcc4Eclipse.targetPlatform.1368352792" isAbstract="false" superClass="bcc4Eclipse.targetPlatform"/>
-							<builder buildPath="${workspace_loc:/proj}/BCC" id="bcc4Eclipse.builder.1010741411" managedBuildOn="true" name="bcc.Default" superClass="bcc4Eclipse.builder"/>
+							<builder buildPath="${workspace_loc:/proj}/BCC" id="bcc4Eclipse.builder.1010741411" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="bcc" superClass="bcc4Eclipse.builder"/>
 						</toolChain>
 					</folderInfo>
 				</configuration>

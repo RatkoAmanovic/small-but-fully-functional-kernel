@@ -8,9 +8,9 @@
 KernelSem::KernelSem(int init) : value(init) {}
 
 KernelSem::~KernelSem() {
-	PCB *pcb = blockedList.getFirst();
+	PCB *pcb = blockedList.takeFirst();
 	while(pcb!=0)
-		pcb = blockedList.getFirst();
+		pcb = blockedList.takeFirst();
 	delete pcb;
 }
 
@@ -49,7 +49,7 @@ void KernelSem::block() {
 
 void KernelSem::deblock() {
 	lock;
-	PCB *pcb = blockedList.getFirst();
+	PCB *pcb = blockedList.takeFirst();
 	if(pcb!=0) {
 		pcb->setStatus(PCB::READY);
 		Scheduler::put(pcb);

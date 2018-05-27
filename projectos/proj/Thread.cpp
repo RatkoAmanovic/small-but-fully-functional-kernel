@@ -7,8 +7,9 @@
 #include <stdlib.h>
 #include "SCHEDULE.H"
 
-Thread::Thread(StackSize stackSize, Time timeSlice) {
-	myPCB = new PCB(this, stackSize, timeSlice);
+Thread::Thread(StackSize stackSize, Time timeSlice, char n) {
+
+	myPCB = new PCB(this, stackSize, timeSlice, n);
 }
 
 Thread::~Thread() {
@@ -31,13 +32,15 @@ void Thread::sleep(Time timeToSleep) {
 }
 
 void dispatch() {
-	asm cli;
-	ContextSwitch::requestSwitch();
-	ContextSwitch::timer();
-	asm sti;
-//	asm pushf;
-//	asm cli;
-//	ContextSwitch::requestSwitch();
-//	//TODO:timer
-//	asm popf;
+	#ifndef BCC_BLOCK_IGNORE
+		asm pushf;
+		asm cli;
+		ContextSwitch::requestSwitch();
+		ContextSwitch::timer();
+		asm popf;
+	#endif
+}
+
+int Thread::getId() {
+	return myPCB->getId();
 }

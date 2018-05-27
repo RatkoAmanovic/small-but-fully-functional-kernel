@@ -9,7 +9,7 @@ typedef void interrupt (*Function)(...);
 
 #define lock PCB::globalLock++;
 #define unlock PCB::globalLock--; \
-if(PCB::globalLock == 0 && ContextSwitch::timeSlicePassed == 1) \
-{ ContextSwitch::timeSlicePassed = 0; dispatch(); }
+if(PCB::globalLock == 0 && ContextSwitch::timePassed == 1) \
+{ ContextSwitch::timePassed = 0; dispatch(); }
 
 #endif /* __INCLUDE_H_ */
