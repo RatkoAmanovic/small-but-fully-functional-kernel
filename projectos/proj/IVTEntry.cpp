@@ -5,8 +5,8 @@
 #include "CSwitch.h"
 #include "KernelEv.h"
 #include "IVTable.h"
-
-IVTable IVTEntry::ivTable = IVTable();
+#include "Event.h"
+IVTable* IVTEntry::ivTable = new IVTable();
 
 IVTEntry::IVTEntry(IVTNo ivtNo, void interrupt (*newRoutine)(...)) : ivtNo(ivtNo), event(0) {
 	lock;
@@ -14,13 +14,13 @@ IVTEntry::IVTEntry(IVTNo ivtNo, void interrupt (*newRoutine)(...)) : ivtNo(ivtNo
 		oldRoutine = getvect(ivtNo);
 		setvect(ivtNo, newRoutine);
 	#endif
-		IVTEntry::ivTable.setEntry(ivtNo, this);
+		IVTEntry::ivTable->setEntry(ivtNo, this);
 	unlock;
 }
 
 IVTEntry::~IVTEntry() {
 	lock;
-	IVTEntry::ivTable.setEntry(ivtNo, 0);
+	IVTEntry::ivTable->setEntry(ivtNo, 0);
 	#ifndef BCC_BLOCK_IGNORE
 	if(oldRoutine != 0) {
 		setvect(ivtNo, oldRoutine);

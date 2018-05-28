@@ -21,8 +21,7 @@ void KernelEv::wait() {
 	unlock;
 }
 
-void KernelEv::signal()
-{
+void KernelEv::signal() {
 	lock;
 	if(value == 0) deblock();
 	value = 1;

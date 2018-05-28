@@ -18,6 +18,7 @@ newIVTEntry##ivtNo.runOldRoutine();\
 
 
 class Event {
+	friend class IVTEntry;
 	public:
 		Event (IVTNo ivtNo);
 		~Event ();

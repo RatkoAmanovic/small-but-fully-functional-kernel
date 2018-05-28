@@ -3,10 +3,12 @@
 #include "PCB.h"
 #include "CSwitch.h"
 #include "IVTEntry.h"
-
+#include "IVTable.h"
 Event::Event(IVTNo ivtNo) {
 	lock;
 	myImpl = new KernelEv(ivtNo);
+	IVTEntry::ivTable->ivTable[ivtNo]->event = this;
+	//IVTEntry::ivTable->getIVTEntry(ivtNo)->event = this;
 	unlock;
 }
 

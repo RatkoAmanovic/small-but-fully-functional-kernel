@@ -73,11 +73,8 @@ PCB* BlockList::getById(int id)
 	PCB *pcb = 0;
 	while(curr!=0)
 	{
-		cout<<"BL::getById curr id = "<<curr->pcb->getId()<<endl;
-
 		if(id==curr->pcb->getId())
 		{
-			cout<<"BL::getById pcb found"<<endl;
 			pcb = curr->pcb;
 			break;
 		}

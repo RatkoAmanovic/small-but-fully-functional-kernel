@@ -19,9 +19,7 @@ PCB::PCB(Thread* thread, StackSize stackSize, Time timeSlice, char n) : thread(t
 	id = ID++;
 	localLock = 0;
 	initStack(stackSize);
-	if(id == 0)
 	pcbList.insert(this);
-	cout<<"PCB::const pcbList Elem id = "<<this->getId()<<endl;
 }
 
 void PCB::initStack(StackSize stackSize)
@@ -65,7 +63,6 @@ PCB* PCB::getRuning() {
 }
 
 void PCB::wrapper() {
-	cout<<"PCB::wrapper aj pisi se majke ti"<<endl;
 	running->thread->run();
 	lock;
 	running->setStatus(PCB::FINISHED);
@@ -97,7 +94,6 @@ void PCB::sleep(Time timeToSleep) {
 }
 
 PCB* PCB::getPCBbyId(int id) {
-	cout<<"PCB::getPCBbyId started"<<endl;
 	return PCB::pcbList.getById(id);
 }
 

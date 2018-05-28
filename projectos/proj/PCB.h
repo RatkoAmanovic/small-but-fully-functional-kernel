@@ -12,6 +12,8 @@ class PCB
 {
 	public:
 
+	char name;
+
 		friend class Thread;
 		friend class ContextSwitch;
 		friend class KernelSem;
@@ -42,7 +44,6 @@ class PCB
 		static unsigned ID;
 		unsigned id;
 
-		char name;
 		static PCB *running;
 		volatile Status status;
 

@@ -13,7 +13,7 @@ Thread::Thread(StackSize stackSize, Time timeSlice, char n) {
 }
 
 Thread::~Thread() {
-	// TODO Auto-generated destructor stub
+	delete myPCB;
 }
 
 void Thread::start() {

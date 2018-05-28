@@ -5,9 +5,12 @@
 
 class KernelEv;
 class IVTable;
-
+class Event;
 class IVTEntry {
 	public:
+
+		friend class Event;
+
 		IVTEntry(IVTNo ivtNo, void interrupt (*newRoutine)(...));
 		~IVTEntry();
 		void signal();
@@ -15,8 +18,8 @@ class IVTEntry {
 	private:
 		IVTNo ivtNo;
 		Function oldRoutine;
-		KernelEv *event;
-		static IVTable ivTable;
+		Event *event;
+		static IVTable* ivTable;
 };
 
 #endif /* __IVTENTRY_H_ */
