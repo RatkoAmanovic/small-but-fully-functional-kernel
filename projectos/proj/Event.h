@@ -23,10 +23,11 @@ class Event {
 		Event (IVTNo ivtNo);
 		~Event ();
 		void wait ();
+		unsigned getId();
 	protected:
 		friend class KernelEv;
 		void signal(); // can call KernelEv
 	private:
-		KernelEv* myImpl;
+		unsigned kernelEvId;
 };
 #endif //__EVENT_H_

@@ -7,24 +7,25 @@
 #include "BlckList.h"
 #include "SlepList.h"
 #include "IdleThrd.h"
+#include "HelpStrc.h"
 
 class PCB
 {
 	public:
 
-	char name;
-
 		friend class Thread;
 		friend class ContextSwitch;
 		friend class KernelSem;
 		friend class KernelEv;
+		friend class KernelThread;
 		friend int main(int argc, char *argv[]);
 
 		enum Status{
 			NEW,RUNNING,READY,SLEEPING,BLOCKED,FINISHED
 		};
 
-		PCB(Thread *thread, StackSize stackSize, Time timeSlice, char n = ' ');
+		PCB(Thread *thread, StackSize stackSize = defaultStackSize, Time timeSlice = defaultTimeSlice);
+		PCB();
 		~PCB();
 		void setStatus(Status status);
 		static PCB* getRuning();
@@ -34,7 +35,8 @@ class PCB
 		 void waitToComplete();
 		 static void sleep(Time timeToSleep);
 		 static PCB* getPCBbyId(int id);
-		 int getId();
+		 static void wrapper();
+		 unsigned getId();
 		 static int getIdleThreadId();
 
 	private:
@@ -60,9 +62,9 @@ class PCB
 		Thread *thread;
 		StackSize stackSize;
 		Time timeSlice;
+		int noTimer;
 
+		void initKernelStack(StackSize stackSize);
 		void initStack(StackSize stackSize);
-
-		static void wrapper();//pokrece i zavrsava nit
 };
 #endif //__PCB_H_

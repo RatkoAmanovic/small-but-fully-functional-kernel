@@ -14,6 +14,7 @@ class BlockList {
 		int isEmpty();
 		PCB* takeFirst();
 		PCB* getById(int id);
+		void removeById(int id);
 	private:
 		typedef struct Elem{
 			PCB *pcb;

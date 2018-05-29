@@ -4,8 +4,17 @@
 #include "SCHEDULE.H"
 #include "Thread.h"
 #include "CSwitch.h"
+#include "KernlThr.h"
+#include "Semaphor.h"
+#include "SemapLst.h"
 
-KernelSem::KernelSem(int init) : value(init) {}
+KernelSemList KernelSem::kernelSemaphoreList = KernelSemList();
+unsigned KernelSem::ID = 0;
+
+KernelSem::KernelSem(int init) : value(init) {
+	id = ID++;
+	kernelSemaphoreList.insert(this);
+}
 
 KernelSem::~KernelSem() {
 	PCB *pcb = blockedList.takeFirst();
@@ -57,3 +66,6 @@ void KernelSem::deblock() {
 	unlock;
 }
 
+unsigned KernelSem::getId(){
+	return id;
+}

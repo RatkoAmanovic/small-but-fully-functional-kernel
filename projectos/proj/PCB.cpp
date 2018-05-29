@@ -14,16 +14,54 @@ int PCB::globalLock = 0;
 SleepList PCB::sleepingList = SleepList();
 BlockList PCB::pcbList = BlockList();
 
-PCB::PCB(Thread* thread, StackSize stackSize, Time timeSlice, char n) : thread(thread),stackSize(stackSize),timeSlice(timeSlice){
-	name = n;
+PCB::PCB(Thread* thread, StackSize stackSize, Time timeSlice) : thread(thread),stackSize(stackSize),timeSlice(timeSlice) {
+	cout<<"PCB::const"<<endl;
 	id = ID++;
 	localLock = 0;
+	if(timeSlice==0)
+		noTimer = 1;
+	else
+		noTimer = 0;
 	initStack(stackSize);
 	pcbList.insert(this);
 }
 
-void PCB::initStack(StackSize stackSize)
-{
+PCB::PCB() {
+	cout<<"PCB::kernelConst"<<endl;
+	id = ID++;
+	localLock = 1;
+	timeSlice = defaultTimeSlice;
+	stackSize = defaultStackSize;
+	initKernelStack(stackSize);
+}
+
+void PCB::initStack(StackSize stackSize) {
+	if(stackSize>MAX_PCB_STACK_SIZE) this->stackSize = MAX_PCB_STACK_SIZE;
+	if(stackSize<MIN_PCB_STACK_SIZE) this->stackSize = MIN_PCB_STACK_SIZE;
+
+	this->stackSize /= sizeof(unsigned);
+	stackSize = this->stackSize;
+
+	stack = new unsigned[stackSize];
+
+	#ifndef BCC_BLOCK_IGNORE
+		stack[stackSize - 1] = FP_SEG(thread);
+		stack[stackSize - 2] = FP_OFF(thread);
+
+		stack[stackSize - 5] = 0x200;
+
+		stack[stackSize - 6] = FP_SEG(Thread::wrapper);
+		stack[stackSize - 7] = FP_OFF(Thread::wrapper);
+
+		stack[stackSize - 16] = 0;
+
+		stackSegment = FP_SEG(stack + stackSize - 16);
+		stackPointer = FP_OFF(stack + stackSize - 16);
+		basePointer = stackPointer;
+	#endif
+}
+
+void PCB::initKernelStack(StackSize stackSize) {
 	if(stackSize>MAX_PCB_STACK_SIZE) this->stackSize = MAX_PCB_STACK_SIZE;
 	if(stackSize<MIN_PCB_STACK_SIZE) this->stackSize = MIN_PCB_STACK_SIZE;
 
@@ -34,23 +72,22 @@ void PCB::initStack(StackSize stackSize)
 
 	#ifndef BCC_BLOCK_IGNORE
 
-	//PSW I = 1
-	stack[stackSize - 1] = 0x200;
-	//Wrapper
-	stack[stackSize - 2] = FP_SEG(PCB::wrapper);
-	stack[stackSize - 3] = FP_OFF(PCB::wrapper);
-	//Base Pointer
-	stack[stackSize - 12] = 0;
+		//PSW I = 1
+		stack[stackSize - 1] = 0x200;
+		//Wrapper
+		stack[stackSize - 2] = FP_SEG(PCB::wrapper);
+		stack[stackSize - 3] = FP_OFF(PCB::wrapper);
+		//Base Pointer
+		stack[stackSize - 12] = 0;
 
-	stackSegment = FP_SEG(stack + stackSize - 12);
-	stackPointer = FP_OFF(stack + stackSize - 12);
-	basePointer = stackPointer;
+		stackSegment = FP_SEG(stack + stackSize - 12);
+		stackPointer = FP_OFF(stack + stackSize - 12);
+		basePointer = stackPointer;
 
 	#endif
 }
 
-PCB::~PCB()
-{
+PCB::~PCB() {
 	delete[] stack;
 }
 
@@ -62,17 +99,9 @@ PCB* PCB::getRuning() {
 	return running;
 }
 
-void PCB::wrapper() {
-	running->thread->run();
-	lock;
-	running->setStatus(PCB::FINISHED);
-	running->blockedList.resumeAll();
-	dispatch();
-}
-
 void PCB::waitToComplete() {
 	lock;
-	if(running == this || status==PCB::FINISHED || running->thread == IdleThread::getIdleThread())//TODO: add idle thread
+	if(running == this || status==PCB::FINISHED || running->thread == IdleThread::getIdleThread())
 	{
 		unlock;
 		return;
@@ -97,10 +126,18 @@ PCB* PCB::getPCBbyId(int id) {
 	return PCB::pcbList.getById(id);
 }
 
-int PCB::getId() {
+unsigned PCB::getId() {
 	return id;
 }
 
 int PCB::getIdleThreadId() {
 	return IdleThread::idleThread->getId();
+}
+
+void PCB::wrapper() {
+	PCB::running->thread->run();
+	lock;
+	PCB::running->setStatus(PCB::FINISHED);
+	PCB::running->blockedList.resumeAll();
+	dispatch();
 }

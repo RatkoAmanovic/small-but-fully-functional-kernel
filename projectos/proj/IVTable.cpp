@@ -7,9 +7,7 @@ IVTable::IVTable() {
 	}
 }
 
-IVTable::~IVTable() {
-	// TODO Auto-generated destructor stub
-}
+IVTable::~IVTable() {}
 
 void IVTable::setEntry(IVTNo ivtNo, IVTEntry *ivtEntry) {
 	ivTable[ivtNo] = ivtEntry;

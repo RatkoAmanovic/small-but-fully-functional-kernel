@@ -1,24 +1,25 @@
-#include "BlckList.h"
-#include "PCB.h"
+#include "EventLst.h"
+#include "KernelEv.h"
 #include "include.h"
 #include "SCHEDULE.H"
 #include "CSwitch.h"
 #include <iostream.h>
+#include "PCB.h"
 
-BlockList::BlockList():head(0), tail(0) {}
+KernelEvList::KernelEvList():head(0), tail(0) {}
 
-BlockList::~BlockList() {
+KernelEvList::~KernelEvList() {
 	resumeAll();
 }
 
-int BlockList::isEmpty() {
+int KernelEvList::isEmpty() {
 	return head == 0;
 }
 
-BlockList& BlockList::insert(PCB *pcb)
+KernelEvList& KernelEvList::insert(KernelEv *event)
 {
 	lock;
-	Elem* newElem = new Elem(pcb);
+	Elem* newElem = new Elem(event);
 	if(head == 0) {
 		head = newElem;
 		tail = head;
@@ -31,12 +32,10 @@ BlockList& BlockList::insert(PCB *pcb)
 	return *this;
 }
 
-void BlockList::resumeAll(){
+void KernelEvList::resumeAll(){
 	if(isEmpty()) return;
 	Elem *curr = head, *prev = 0;
 	while(curr!=0) {
-		curr->pcb->setStatus(PCB::READY);
-		Scheduler::put(curr->pcb);
 		prev = curr;
 		curr = curr->next;
 		delete prev;
@@ -48,10 +47,10 @@ void BlockList::resumeAll(){
 	return;
 }
 
-PCB* BlockList::takeFirst()
+KernelEv* KernelEvList::takeFirst()
 {
 	if(isEmpty()) return 0;
-	PCB *pcb = head->pcb;
+	KernelEv *event = head->event;
 	if(head->next==0)
 	{
 		delete head;
@@ -63,31 +62,31 @@ PCB* BlockList::takeFirst()
 		head = head->next;
 		delete temp;
 	}
-	return pcb;
+	return event;
 }
 
-PCB* BlockList::getById(int id) {
+KernelEv* KernelEvList::getById(int id) {
 	if(isEmpty()) return 0;
 	Elem *curr = head;
-	PCB *pcb = 0;
+	KernelEv *event = 0;
 	while(curr!=0)
 	{
-		if(id==curr->pcb->getId())
+		if(id==curr->event->getId())
 		{
-			pcb = curr->pcb;
+			event = curr->event;
 			break;
 		}
 		curr = curr->next;
 	}
-	return pcb;
+	return event;
 }
 
-void BlockList::removeById(int id) {
+void KernelEvList::removeById(int id) {
 	if(isEmpty()) return;
 		Elem *curr = head, *prev = 0;
 		while(curr!=0)
 		{
-			if(id==curr->pcb->getId())
+			if(id==curr->event->getId())
 			{
 				if(prev==0) {
 					takeFirst();

@@ -2,6 +2,7 @@
 #define _semaphor_h_
 
 #include "include.h"
+#include "HelpStrc.h"
 
 class KernelSem;
 
@@ -13,6 +14,6 @@ class Semaphore {
 		virtual void signal();
 		int val () const; // Returns the current value of the semaphore
 	private:
-		KernelSem* myImpl;
+		unsigned kernelSemId;
 };
 #endif

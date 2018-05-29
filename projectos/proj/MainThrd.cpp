@@ -17,7 +17,6 @@ int userMain(int argc, char *argv[]);
 
 void MainThread::setUserMainArguments(int argc, char *argv[])
 {
-	cout<<"MT::setUserArgs args"<<endl;
 	MainThread::argumentCount = argc;
 	MainThread::argumentValue = argv;
 }

@@ -8,7 +8,7 @@ class IVTEntry;
 class IVTable {
 	public:
 
-		friend class Event;
+		friend class KernelEv;
 
 		IVTable();
 		~IVTable();

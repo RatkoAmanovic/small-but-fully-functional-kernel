@@ -1,24 +1,26 @@
-#include "BlckList.h"
-#include "PCB.h"
+#include "SemapLst.h"
+#include "KernlSem.h"
 #include "include.h"
 #include "SCHEDULE.H"
 #include "CSwitch.h"
 #include <iostream.h>
+#include "Semaphor.h"
+#include "PCB.h"
 
-BlockList::BlockList():head(0), tail(0) {}
+KernelSemList::KernelSemList():head(0), tail(0) {}
 
-BlockList::~BlockList() {
+KernelSemList::~KernelSemList() {
 	resumeAll();
 }
 
-int BlockList::isEmpty() {
+int KernelSemList::isEmpty() {
 	return head == 0;
 }
 
-BlockList& BlockList::insert(PCB *pcb)
+KernelSemList& KernelSemList::insert(KernelSem *semaphore)
 {
 	lock;
-	Elem* newElem = new Elem(pcb);
+	Elem* newElem = new Elem(semaphore);
 	if(head == 0) {
 		head = newElem;
 		tail = head;
@@ -31,12 +33,10 @@ BlockList& BlockList::insert(PCB *pcb)
 	return *this;
 }
 
-void BlockList::resumeAll(){
+void KernelSemList::resumeAll(){
 	if(isEmpty()) return;
 	Elem *curr = head, *prev = 0;
 	while(curr!=0) {
-		curr->pcb->setStatus(PCB::READY);
-		Scheduler::put(curr->pcb);
 		prev = curr;
 		curr = curr->next;
 		delete prev;
@@ -48,10 +48,10 @@ void BlockList::resumeAll(){
 	return;
 }
 
-PCB* BlockList::takeFirst()
+KernelSem* KernelSemList::takeFirst()
 {
 	if(isEmpty()) return 0;
-	PCB *pcb = head->pcb;
+	KernelSem *semaphore = head->semaphore;
 	if(head->next==0)
 	{
 		delete head;
@@ -63,31 +63,31 @@ PCB* BlockList::takeFirst()
 		head = head->next;
 		delete temp;
 	}
-	return pcb;
+	return semaphore;
 }
 
-PCB* BlockList::getById(int id) {
+KernelSem* KernelSemList::getById(int id) {
 	if(isEmpty()) return 0;
 	Elem *curr = head;
-	PCB *pcb = 0;
+	KernelSem *semaphore = 0;
 	while(curr!=0)
 	{
-		if(id==curr->pcb->getId())
+		if(id==curr->semaphore->getId())
 		{
-			pcb = curr->pcb;
+			semaphore = curr->semaphore;
 			break;
 		}
 		curr = curr->next;
 	}
-	return pcb;
+	return semaphore;
 }
 
-void BlockList::removeById(int id) {
+void KernelSemList::removeById(int id) {
 	if(isEmpty()) return;
 		Elem *curr = head, *prev = 0;
 		while(curr!=0)
 		{
-			if(id==curr->pcb->getId())
+			if(id==curr->semaphore->getId())
 			{
 				if(prev==0) {
 					takeFirst();

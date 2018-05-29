@@ -2,9 +2,7 @@
 
 IdleThread* IdleThread::idleThread = 0;
 
-IdleThread::IdleThread() :
-		Thread(0, 1, 'i') {
-}
+IdleThread::IdleThread() : Thread(0, 1) {}
 
 IdleThread::~IdleThread() {
 }

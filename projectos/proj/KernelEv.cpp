@@ -2,14 +2,25 @@
 #include "PCB.h"
 #include "SCHEDULE.H"
 #include "CSwitch.h"
+#include "EventLst.h"
+#include "IVTEntry.h"
+#include "IVTable.h"
+#include "Event.h"
+#include <dos.h>
+#include "IdleThrd.h"
+
+KernelEvList KernelEv::kernelEventList = KernelEvList();
+unsigned KernelEv::ID = 0;
 
 KernelEv::KernelEv(IVTNo ivtNo) : ivtNo(ivtNo), value(0) {
 	myPCB = PCB::running;
+	id = ID++;
+	kernelEventList.insert(this);
+	IVTEntry::ivTable->ivTable[ivtNo]->kernelEvent = this;
+	IVTEntry::ivTable->getIVTEntry(ivtNo)->kernelEvent = this;
 }
 
-KernelEv::~KernelEv() {
-	// TODO Auto-generated destructor stub
-}
+KernelEv::~KernelEv() {}
 
 void KernelEv::wait() {
 	lock;
@@ -42,4 +53,8 @@ void KernelEv::deblock()
 	myPCB->setStatus(PCB::READY);
 	Scheduler::put(myPCB);
 	unlock;
+}
+
+unsigned KernelEv::getId() {
+	return id;
 }

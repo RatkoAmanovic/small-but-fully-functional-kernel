@@ -5,10 +5,10 @@
 #include "CSwitch.h"
 #include "KernelEv.h"
 #include "IVTable.h"
-#include "Event.h"
+
 IVTable* IVTEntry::ivTable = new IVTable();
 
-IVTEntry::IVTEntry(IVTNo ivtNo, void interrupt (*newRoutine)(...)) : ivtNo(ivtNo), event(0) {
+IVTEntry::IVTEntry(IVTNo ivtNo, void interrupt (*newRoutine)(...)) : ivtNo(ivtNo), kernelEvent(0) {
 	lock;
 	#ifndef BCC_BLOCK_IGNORE
 		oldRoutine = getvect(ivtNo);
@@ -32,7 +32,7 @@ IVTEntry::~IVTEntry() {
 
 void IVTEntry::signal() {
 	lock;
-	if(event!=0) event->signal();
+	if(kernelEvent!=0) kernelEvent->signal();
 	unlock;
 }
 

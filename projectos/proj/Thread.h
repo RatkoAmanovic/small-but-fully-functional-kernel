@@ -4,10 +4,6 @@
 #include "include.h"
 #include <iostream.h>
 
-const StackSize defaultStackSize = 4096;
-const Time defaultTimeSlice = 2; // default = 2*55ms
-typedef int ID;
-
 class PCB; // Kernel's implementation of a user's thread
 
 class Thread {
@@ -16,13 +12,17 @@ class Thread {
 		 void waitToComplete();
 		 virtual ~Thread();
 		 static void sleep(Time timeToSleep);
-		 int getId();
+		 unsigned getId();
+		 void resumeAll();
 	protected:
 		 friend class PCB;
-		 Thread (StackSize stackSize = defaultStackSize, Time timeSlice = defaultTimeSlice, char n = ' ');
+		 Thread (StackSize stackSize = defaultStackSize, Time timeSlice = defaultTimeSlice);
 		 virtual void run() {}
+
 	private:
-		 PCB* myPCB;
+		 volatile unsigned pcbId;
+
+		 static void wrapper(Thread* running);
 };
 
 void dispatch ();
