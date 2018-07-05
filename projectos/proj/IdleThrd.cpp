@@ -1,8 +1,12 @@
 #include "IdleThrd.h"
+#include "PCB.h"
 
 IdleThread* IdleThread::idleThread = 0;
+PCB* IdleThread::idlePCB = 0;
 
-IdleThread::IdleThread() : Thread(0, 1) {}
+IdleThread::IdleThread() : Thread(1, 1, 1) {
+	idlePCB = new PCB(this, defaultStackSize, 1);
+}
 
 IdleThread::~IdleThread() {
 }

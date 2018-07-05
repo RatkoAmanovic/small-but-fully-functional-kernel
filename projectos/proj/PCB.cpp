@@ -5,6 +5,7 @@
 #include "SlepList.h"
 #include "CSwitch.h"
 #include "IdleThrd.h"
+#include "KernlThr.h"
 
 unsigned PCB::ID = 0;
 const StackSize PCB::MIN_PCB_STACK_SIZE = 0x400;
@@ -15,7 +16,6 @@ SleepList PCB::sleepingList = SleepList();
 BlockList PCB::pcbList = BlockList();
 
 PCB::PCB(Thread* thread, StackSize stackSize, Time timeSlice) : thread(thread),stackSize(stackSize),timeSlice(timeSlice) {
-	cout<<"PCB::const"<<endl;
 	id = ID++;
 	localLock = 0;
 	if(timeSlice==0)
@@ -108,6 +108,7 @@ void PCB::waitToComplete() {
 	}
 	running->setStatus(PCB::BLOCKED);
 	blockedList.insert(running);
+
 	dispatch();
 	unlock;
 }
@@ -135,9 +136,5 @@ int PCB::getIdleThreadId() {
 }
 
 void PCB::wrapper() {
-	PCB::running->thread->run();
-	lock;
-	PCB::running->setStatus(PCB::FINISHED);
-	PCB::running->blockedList.resumeAll();
-	dispatch();
+	KernelThread::run();
 }

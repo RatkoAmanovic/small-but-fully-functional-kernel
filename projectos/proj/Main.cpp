@@ -9,26 +9,42 @@
 #include "threadA.h"
 #include "IVTEntry.h"
 #include "Event.h"
+//#include "TestThr.h"
 #include "KernlThr.h"
 
 
 int main(int argc, char *argv[]) {
 	KernelThread::inic();
 
+	cout<<"Pravi kernel"<<endl;
 	KernelThread::getKernelThread();
 
+	cout<<"Pravi main"<<endl;
+	MainThread::getMainThread();
+
+	cout<<"Postavi parametre main"<<endl;
 	MainThread::mainThread->setUserMainArguments(argc, argv);
 
+	cout<<"Pravi mainpcb"<<endl;
 	PCB* mainPCB = new PCB(0,0,1);
 	mainPCB->setStatus(PCB::RUNNING);
 	PCB::running = mainPCB;
 
-	cout<<"M:: before idle"<<endl;
-
 	IdleThread::getIdleThread();
-
+	cout<<"prosao idle"<<endl;
 
 	ContextSwitch::inic();
+
+//	cout<<"Pravi a"<<endl;
+//	ThreadA** niz = new ThreadA*[100];
+//
+//	   for (int i = 0; i<100; i++){
+//		   niz[i] = new ThreadA();
+//		   niz[i]->start();
+//	   }
+
+
+
 
 	MainThread::mainThread->waitToComplete();
 
@@ -38,5 +54,6 @@ int main(int argc, char *argv[]) {
 
 	delete mainPCB;
 	delete MainThread::mainThread;
+	cout<<"KRAJ"<<endl;
 	return 0;
 }

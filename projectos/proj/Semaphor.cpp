@@ -11,16 +11,8 @@ Semaphore::Semaphore(int init) {
 	helper->function = eventConstruct;
 	helper->init = init;
 	#ifndef BCC_BLOCK_IGNORE
-		helper->stackSegment = FP_SEG(this);
-		helper->stackOffset = FP_OFF(this);
-
-		unsigned helperSegment = FP_SEG(helper);
-		unsigned helperOffset = FP_OFF(helper);
-
-		asm mov cx, helperSegment;
-		asm mov dx, helperOffset;
+		CONSTRUCTOR_SYSTEM_CALL;
 	#endif
-	KernelThread::switchDomain();
 	kernelSemId = helper->id;
 	delete helper;
 }
@@ -30,13 +22,8 @@ Semaphore::~Semaphore() {
 	helper->function = semaphoreDestruct;
 	helper->id = kernelSemId;
 	#ifndef BCC_BLOCK_IGNORE
-		unsigned helperSegment = FP_SEG(helper);
-		unsigned helperOffset = FP_OFF(helper);
-
-		asm mov cx, helperSegment;
-		asm mov dx, helperOffset;
+		SYSTEM_CALL;
 	#endif
-	KernelThread::switchDomain();
 	delete helper;
 }
 
@@ -50,13 +37,8 @@ int Semaphore::wait(int toBlock) {
 	helper->function = eventWait;
 	helper->id = kernelSemId;
 	#ifndef BCC_BLOCK_IGNORE
-		unsigned helperSegment = FP_SEG(helper);
-		unsigned helperOffset = FP_OFF(helper);
-
-		asm mov cx, helperSegment;
-		asm mov dx, helperOffset;
+		SYSTEM_CALL;
 	#endif
-	KernelThread::switchDomain();
 	temp = helper->init;
 	delete helper;
 	return temp;
@@ -67,13 +49,8 @@ void Semaphore::signal() {
 	helper->function = semaphoreSignal;
 	helper->id = kernelSemId;
 	#ifndef BCC_BLOCK_IGNORE
-		unsigned helperSegment = FP_SEG(helper);
-		unsigned helperOffset = FP_OFF(helper);
-
-		asm mov cx, helperSegment;
-		asm mov dx, helperOffset;
+		SYSTEM_CALL;
 	#endif
-	KernelThread::switchDomain();
 	delete helper;
 }
 
@@ -83,13 +60,8 @@ int Semaphore::val() const {
 	helper->function = semaphoreValue;
 	helper->id = kernelSemId;
 	#ifndef BCC_BLOCK_IGNORE
-		unsigned helperSegment = FP_SEG(helper);
-		unsigned helperOffset = FP_OFF(helper);
-
-		asm mov cx, helperSegment;
-		asm mov dx, helperOffset;
+		SYSTEM_CALL;
 	#endif
-	KernelThread::switchDomain();
 	temp = helper->init;
 	delete helper;
 	return temp;

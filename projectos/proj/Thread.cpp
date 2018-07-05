@@ -10,25 +10,22 @@
 #include "KernlThr.h"
 
 Thread::Thread(StackSize stackSize, Time timeSlice) {
+	lock;
+	cout<<"T::Constructor"<<endl;
 	Helper* helper = new Helper();
 	helper->function = threadConstruct;
 	helper->stackSize = stackSize;
 	helper->timeSlice = timeSlice;
 	#ifndef BCC_BLOCK_IGNORE
-		helper->stackSegment = FP_SEG(this);
-		helper->stackOffset = FP_OFF(this);
-
-		unsigned helperSegment = FP_SEG(helper);
-		unsigned helperOffset = FP_OFF(helper);
-
-		asm mov cx, helperSegment;
-		asm mov dx, helperOffset;
+		CONSTRUCTOR_SYSTEM_CALL;
 	#endif
-	KernelThread::switchDomain();
-	cout<<"T::after switchDomain"<<endl;
 
 	pcbId = helper->id;
+	unlock;
 	delete helper;
+}
+
+Thread::Thread(int i, int j, int k) {
 }
 
 Thread::~Thread() {
@@ -36,13 +33,8 @@ Thread::~Thread() {
 	helper->function = threadDestruct;
 	helper->id = pcbId;
 	#ifndef BCC_BLOCK_IGNORE
-		unsigned helperSegment = FP_SEG(helper);
-		unsigned helperOffset = FP_OFF(helper);
-
-		asm mov cx, helperSegment;
-		asm mov dx, helperOffset;
+		SYSTEM_CALL;
 	#endif
-	KernelThread::switchDomain();
 	delete helper;
 }
 
@@ -51,13 +43,8 @@ void Thread::start() {
 	helper->function = threadStart;
 	helper->id = pcbId;
 	#ifndef BCC_BLOCK_IGNORE
-		unsigned helperSegment = FP_SEG(helper);
-		unsigned helperOffset = FP_OFF(helper);
-
-		asm mov cx, helperSegment;
-		asm mov dx, helperOffset;
+		SYSTEM_CALL;
 	#endif
-	KernelThread::switchDomain();
 	delete helper;
 }
 
@@ -66,13 +53,8 @@ void Thread::waitToComplete() {
 	helper->function = threadWaitToComplete;
 	helper->id = pcbId;
 	#ifndef BCC_BLOCK_IGNORE
-		unsigned helperSegment = FP_SEG(helper);
-		unsigned helperOffset = FP_OFF(helper);
-
-		asm mov cx, helperSegment;
-		asm mov dx, helperOffset;
+		SYSTEM_CALL;
 	#endif
-	KernelThread::switchDomain();
 	delete helper;
 }
 
@@ -81,13 +63,8 @@ void Thread::sleep(Time timeToSleep) {
 	helper->function = threadDestruct;
 	helper->timeSlice = timeToSleep;
 	#ifndef BCC_BLOCK_IGNORE
-		unsigned helperSegment = FP_SEG(helper);
-		unsigned helperOffset = FP_OFF(helper);
-
-		asm mov cx, helperSegment;
-		asm mov dx, helperOffset;
+		SYSTEM_CALL;
 	#endif
-	KernelThread::switchDomain();
 	delete helper;
 }
 
@@ -96,13 +73,8 @@ void Thread::resumeAll() {
 	helper->function = threadWaitToComplete;
 	helper->id = pcbId;
 	#ifndef BCC_BLOCK_IGNORE
-		unsigned helperSegment = FP_SEG(helper);
-		unsigned helperOffset = FP_OFF(helper);
-
-		asm mov cx, helperSegment;
-		asm mov dx, helperOffset;
+		SYSTEM_CALL;
 	#endif
-	KernelThread::switchDomain();
 	delete helper;
 }
 
@@ -110,13 +82,8 @@ void dispatch() {
 	Helper* helper = new Helper();
 	helper->function = threadDispatch;
 	#ifndef BCC_BLOCK_IGNORE
-		unsigned helperSegment = FP_SEG(helper);
-		unsigned helperOffset = FP_OFF(helper);
-
-		asm mov cx, helperSegment;
-		asm mov dx, helperOffset;
+		SYSTEM_CALL;
 	#endif
-	KernelThread::switchDomain();
 	delete helper;
 }
 

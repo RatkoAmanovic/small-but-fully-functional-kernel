@@ -1,11 +1,11 @@
 #include "MainThrd.h"
 
-MainThread* MainThread::mainThread = new MainThread();
+MainThread* MainThread::mainThread = 0;
 char** MainThread::argumentValue = 0;
 int MainThread::argumentCount = 0;
 int MainThread::userMainReturnValue = 0;
 
-MainThread::MainThread() : Thread(0,1) {
+MainThread::MainThread() : Thread(4096,1) {
 	cout<<"MT::const"<<endl;
 }
 
@@ -23,6 +23,8 @@ void MainThread::setUserMainArguments(int argc, char *argv[])
 
 MainThread* MainThread::getMainThread()
 {
+	if(mainThread == 0)
+		mainThread = new MainThread();
 	return mainThread;
 }
 

@@ -11,7 +11,7 @@ public:
 	KernelThread();
 	~KernelThread();
 	static void inic();
-	void run();
+	static void run();
 
 	static void interrupt switchDomain(...);
 	static KernelThread* getKernelThread();

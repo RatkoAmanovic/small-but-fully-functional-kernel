@@ -19,7 +19,7 @@ static int ID55;
 
 public:
 
-	ThreadA(StackSize stackSize = defaultStackSize, Time timeSlice  = defaultTimeSlice):Thread(stackSize,timeSlice),id(++ID55),s(new Semaphore(0)){}
+	ThreadA(StackSize stackSize = defaultStackSize, Time timeSlice  = defaultTimeSlice):Thread(stackSize,timeSlice),s(new Semaphore(0)){id = ID55++;}
 
 	void run();
 

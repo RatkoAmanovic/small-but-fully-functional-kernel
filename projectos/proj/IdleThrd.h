@@ -14,6 +14,7 @@ class IdleThread : public Thread{
 		static IdleThread* getIdleThread();
 	private:
 		static IdleThread *idleThread;
+		static PCB* idlePCB;
 };
 
 #endif /* __IDLETHRD_H_ */

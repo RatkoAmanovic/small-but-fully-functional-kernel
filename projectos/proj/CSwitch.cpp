@@ -23,7 +23,6 @@ void ContextSwitch::requestSwitch()
 }
 
 void interrupt ContextSwitch::timer(...){
-
 	if(PCB::running->noTimer==1)
 	{
 		if(!switchRequested) {
