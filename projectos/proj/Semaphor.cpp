@@ -8,11 +8,14 @@
 
 Semaphore::Semaphore(int init) {
 	Helper* helper = new Helper();
-	helper->function = eventConstruct;
+	helper->function = semaphoreConstruct;
 	helper->init = init;
 	#ifndef BCC_BLOCK_IGNORE
-		CONSTRUCTOR_SYSTEM_CALL;
+		helper->stackSegment = FP_SEG(this);
+		helper->stackOffset = FP_OFF(this);
 	#endif
+
+	systemCall(helper);
 	kernelSemId = helper->id;
 	delete helper;
 }
@@ -21,9 +24,7 @@ Semaphore::~Semaphore() {
 	Helper* helper = new Helper();
 	helper->function = semaphoreDestruct;
 	helper->id = kernelSemId;
-	#ifndef BCC_BLOCK_IGNORE
-		SYSTEM_CALL;
-	#endif
+	systemCall(helper);
 	delete helper;
 }
 
@@ -34,11 +35,9 @@ int Semaphore::wait(int toBlock) {
 			return -1;
 	}
 	Helper* helper = new Helper();
-	helper->function = eventWait;
+	helper->function = semaphoreWait;
 	helper->id = kernelSemId;
-	#ifndef BCC_BLOCK_IGNORE
-		SYSTEM_CALL;
-	#endif
+	systemCall(helper);
 	temp = helper->init;
 	delete helper;
 	return temp;
@@ -48,9 +47,7 @@ void Semaphore::signal() {
 	Helper* helper = new Helper();
 	helper->function = semaphoreSignal;
 	helper->id = kernelSemId;
-	#ifndef BCC_BLOCK_IGNORE
-		SYSTEM_CALL;
-	#endif
+	systemCall(helper);
 	delete helper;
 }
 
@@ -59,10 +56,9 @@ int Semaphore::val() const {
 	Helper* helper = new Helper();
 	helper->function = semaphoreValue;
 	helper->id = kernelSemId;
-	#ifndef BCC_BLOCK_IGNORE
-		SYSTEM_CALL;
-	#endif
+	systemCall(helper);
 	temp = helper->init;
 	delete helper;
 	return temp;
 }
+

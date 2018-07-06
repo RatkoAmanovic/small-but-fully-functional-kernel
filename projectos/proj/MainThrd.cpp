@@ -5,7 +5,7 @@ char** MainThread::argumentValue = 0;
 int MainThread::argumentCount = 0;
 int MainThread::userMainReturnValue = 0;
 
-MainThread::MainThread() : Thread(4096,1) {
+MainThread::MainThread() : Thread(defaultStackSize,1) {
 	cout<<"MT::const"<<endl;
 }
 

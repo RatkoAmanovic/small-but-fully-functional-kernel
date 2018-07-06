@@ -3,6 +3,7 @@
 
 #include "include.h"
 #include "IVTEntry.h"
+#include "HelpStrc.h"
 
 class KernelEv;
 

@@ -19,11 +19,11 @@ int main(int argc, char *argv[]) {
 	cout<<"Pravi kernel"<<endl;
 	KernelThread::getKernelThread();
 
-	cout<<"Pravi main"<<endl;
-	MainThread::getMainThread();
-
-	cout<<"Postavi parametre main"<<endl;
-	MainThread::mainThread->setUserMainArguments(argc, argv);
+//	cout<<"Pravi main"<<endl;
+//	MainThread::getMainThread();
+//
+//	cout<<"Postavi parametre main"<<endl;
+//	MainThread::mainThread->setUserMainArguments(argc, argv);
 
 	cout<<"Pravi mainpcb"<<endl;
 	PCB* mainPCB = new PCB(0,0,1);
@@ -35,25 +35,32 @@ int main(int argc, char *argv[]) {
 
 	ContextSwitch::inic();
 
-//	cout<<"Pravi a"<<endl;
-//	ThreadA** niz = new ThreadA*[100];
+	cout<<"Pravi a"<<endl;
+	ThreadA** niz = new ThreadA*[100];
+
+	   for (int i = 0; i<100; i++){
+		   niz[i] = new ThreadA();
+		   niz[i]->start();
+	   }
+	   for(int j = 0; j<200; j++){
+		   niz[j]->waitToComplete();
+	   }
+
+	   cout<<"Finished All"<<endl<<endl<<endl<<endl<<endl;
+//	ThreadA* a = new ThreadA();
+//	a->start();
+//	a->waitToComplete();
+
+
 //
-//	   for (int i = 0; i<100; i++){
-//		   niz[i] = new ThreadA();
-//		   niz[i]->start();
-//	   }
-
-
-
-
-	MainThread::mainThread->waitToComplete();
-
-	int returnValue = MainThread::userMainReturnValue;
+//	MainThread::mainThread->waitToComplete();
+//
+//	int returnValue = MainThread::userMainReturnValue;
 
 	ContextSwitch::restore();
 
 	delete mainPCB;
-	delete MainThread::mainThread;
+//	delete MainThread::mainThread;
 	cout<<"KRAJ"<<endl;
 	return 0;
 }

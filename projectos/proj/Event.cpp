@@ -15,8 +15,11 @@ Event::Event(IVTNo ivtNo) {
 	helper->function = eventConstruct;
 	helper->ivtNo = ivtNo;
 	#ifndef BCC_BLOCK_IGNORE
-		CONSTRUCTOR_SYSTEM_CALL;
+		helper->stackSegment = FP_SEG(this);
+		helper->stackOffset = FP_OFF(this);
 	#endif
+
+	systemCall(helper);
 	kernelEvId = helper->id;
 	delete helper;
 }
@@ -25,9 +28,7 @@ Event::~Event() {
 	Helper* helper = new Helper();
 	helper->function = eventDestruct;
 	helper->id = kernelEvId;
-	#ifndef BCC_BLOCK_IGNORE
-		SYSTEM_CALL;
-	#endif
+	systemCall(helper);
 	delete helper;
 }
 
@@ -35,9 +36,7 @@ void Event::wait() {
 	Helper* helper = new Helper();
 	helper->function = eventWait;
 	helper->id = kernelEvId;
-	#ifndef BCC_BLOCK_IGNORE
-		SYSTEM_CALL;
-	#endif
+	systemCall(helper);
 	delete helper;
 }
 
@@ -45,11 +44,8 @@ void Event::signal() {
 	Helper* helper = new Helper();
 	helper->function = eventSignal;
 	helper->id = kernelEvId;
-	#ifndef BCC_BLOCK_IGNORE
-		SYSTEM_CALL;
-	#endif
+	systemCall(helper);
 	delete helper;
 }
-
 
 

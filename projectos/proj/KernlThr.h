@@ -13,7 +13,8 @@ public:
 	static void inic();
 	static void run();
 
-	static void interrupt switchDomain(...);
+
+	static void interrupt switchToKernel(...);
 	static KernelThread* getKernelThread();
 
 	static void threadConstruct();
@@ -33,13 +34,14 @@ public:
 	static void semaphoreValue();
 	static void semaphoreDestruct();
 private:
+	static void interrupt switchToUser(...);
 	static volatile int kernelThreadRequestedSwitch;
-	static volatile int inKernel;
 	static volatile Helper* helper;
 	static volatile PCB* myPCB;
 	static volatile Function* functions;
 	static KernelThread* kernelThread;
-	static const int SWITCH_ENTRY;
+	static const int SWITCH_TO_KERNEL_ENTRY;
+	static const int SWITCH_TO_USER_ENTRY;
 };
 
 #endif /* KERNLTHR_H_ */

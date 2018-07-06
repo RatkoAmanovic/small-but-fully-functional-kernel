@@ -3,6 +3,7 @@
 
 #include "include.h"
 #include <iostream.h>
+#include "HelpStrc.h"
 
 class PCB; // Kernel's implementation of a user's thread
 

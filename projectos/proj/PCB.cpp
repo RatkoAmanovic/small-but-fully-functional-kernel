@@ -100,27 +100,22 @@ PCB* PCB::getRuning() {
 }
 
 void PCB::waitToComplete() {
-	lock;
+	cout<<"PCB::waitToComplete "<<running->id<<endl;
 	if(running == this || status==PCB::FINISHED || running->thread == IdleThread::getIdleThread())
 	{
-		unlock;
 		return;
 	}
 	running->setStatus(PCB::BLOCKED);
 	blockedList.insert(running);
-
-	dispatch();
-	unlock;
+	KernelThread::threadDispatch();
 }
 
 void PCB::sleep(Time timeToSleep) {
-	lock;
 	if(timeToSleep <= 0)
 		return;
 	running->setStatus(PCB::SLEEPING);
 	sleepingList.insert(running, timeToSleep);
-	dispatch();
-	unlock;
+	KernelThread::threadDispatch();
 }
 
 PCB* PCB::getPCBbyId(int id) {
