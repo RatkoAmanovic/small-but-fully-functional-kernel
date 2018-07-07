@@ -102,65 +102,54 @@ void interrupt KernelThread::switchToKernel(...) {
 }
 
 void interrupt KernelThread::switchToUser(...) {
-#ifndef BCC_BLOCK_IGNORE
-			asm{
-				mov tempStackSegmentKT, ss
-				mov tempStackPointerKT, sp
-				mov tempBasePointerKT, bp
-			}
-		#endif
-
-		myPCB->stackSegment = tempStackSegmentKT;
-		myPCB->stackPointer = tempStackPointerKT;
-		myPCB->basePointer = tempBasePointerKT;
-
-		myPCB->localLock = PCB::globalLock;
-
-		if(kernelThreadRequestedSwitch == 1) {
-			if(PCB::running->status == PCB::RUNNING && PCB::running->thread != IdleThread::getIdleThread()) {
-				PCB::running->setStatus(PCB::READY);
-				Scheduler::put(PCB::running);
-			}
-
-			PCB::running = Scheduler::get();
-
-			if(PCB::running == 0)
-				PCB::running = PCB::getPCBbyId(PCB::getIdleThreadId());
-			PCB::running->setStatus(PCB::RUNNING);
-			ContextSwitch::counter = PCB::running->timeSlice;
+	#ifndef BCC_BLOCK_IGNORE
+		asm{
+			mov tempStackSegmentKT, ss
+			mov tempStackPointerKT, sp
+			mov tempBasePointerKT, bp
 		}
-		PCB::globalLock = PCB::running->localLock;
+	#endif
 
-		tempStackSegmentKT = PCB::running->stackSegment;
-		tempStackPointerKT = PCB::running->stackPointer;
-		tempBasePointerKT = PCB::running->basePointer;
+	myPCB->stackSegment = tempStackSegmentKT;
+	myPCB->stackPointer = tempStackPointerKT;
+	myPCB->basePointer = tempBasePointerKT;
 
+	myPCB->localLock = PCB::globalLock;
+
+	if(kernelThreadRequestedSwitch == 1) {
+		if(PCB::running->status == PCB::RUNNING && PCB::running->thread != IdleThread::getIdleThread()) {
+			PCB::running->setStatus(PCB::READY);
+			Scheduler::put(PCB::running);
+		}
+
+		PCB::running = Scheduler::get();
+
+		if(PCB::running == 0)
+			PCB::running = PCB::getPCBbyId(PCB::getIdleThreadId());
+		PCB::running->setStatus(PCB::RUNNING);
 		ContextSwitch::counter = PCB::running->timeSlice;
+	}
+	PCB::globalLock = PCB::running->localLock;
 
-		#ifndef BCC_BLOCK_IGNORE
-			asm{
-				mov ss, tempStackSegmentKT
-				mov sp, tempStackPointerKT
-				mov bp, tempBasePointerKT
-			}
-		#endif
-		kernelThreadRequestedSwitch = 0;
+	tempStackSegmentKT = PCB::running->stackSegment;
+	tempStackPointerKT = PCB::running->stackPointer;
+	tempBasePointerKT = PCB::running->basePointer;
+
+	ContextSwitch::counter = PCB::running->timeSlice;
+
+	#ifndef BCC_BLOCK_IGNORE
+		asm{
+			mov ss, tempStackSegmentKT
+			mov sp, tempStackPointerKT
+			mov bp, tempBasePointerKT
+		}
+	#endif
+	kernelThreadRequestedSwitch = 0;
 }
 
-
-
-
 void KernelThread::threadConstruct() {
-	cout<<"KT::threadConst "<<PCB::ID-1<<endl;
+	cout<<"KT::threadConst "<<PCB::ID<<endl;
 	Thread* thread = 0;
-	unsigned helperSegment;
-	unsigned helperOffset;
-#ifndef BCC_BLOCK_IGNORE
-	helperSegment = FP_SEG(helper);
-	helperOffset = FP_OFF(helper);
-#endif
-	cout<<"seg "<<helperSegment<<" off "<<helperOffset<<endl;
-
 
 	#ifndef BCC_BLOCK_IGNORE
 		thread = (Thread*)MK_FP(helper->stackSegment, helper->stackOffset);
@@ -190,27 +179,24 @@ void KernelThread::threadWaitToComplete() {
 }
 
 void KernelThread::threadSleep() {
-	cout<<"KT::threadsleep"<<endl;
+	cout<<"KT::threadSleep "<<helper->timeSlice<<endl;
 	PCB::running->sleep(helper->timeSlice);
 }
 
 void KernelThread::threadDispatch() {
-	cout<<"KT::threaddispatch "<<endl;
+	cout<<"KT::threadDispatch "<<endl;
 	kernelThreadRequestedSwitch = 1;
 }
 
 void KernelThread::threadResumeAll() {
-	cout<<"KT::threadresumeall"<<endl;
-	PCB::running->setStatus(PCB::RUNNING);
-	PCB::pcbList.resumeAll();
+	cout<<"KT::threadResumeAll "<<PCB::running->getId()<<endl;
+	PCB::running->setStatus(PCB::FINISHED);
+	PCB::pcbList.getById(helper->id)->blockedList.resumeAll();
 }
 
 void KernelThread::eventConstruct() {
-	cout<<"KT::eventconst"<<endl<<endl<<endl;
-	Event* event = 0;
-	#ifndef BCC_BLOCK_IGNORE
-		event = (Event*)MK_FP(helper->stackSegment, helper->stackOffset);
-	#endif
+	cout<<"KT::eventConst"<<endl<<endl<<endl;
+
 	lock;
 	new KernelEv(helper->ivtNo);
 	unlock;
@@ -218,30 +204,26 @@ void KernelThread::eventConstruct() {
 }
 
 void KernelThread::eventDestruct() {
-	cout<<"KT::eventdest"<<endl<<endl<<endl;
+	cout<<"KT::eventDest"<<endl<<endl<<endl;
 
 	KernelEv::kernelEventList.removeById(helper->id);
 }
 
 void KernelThread::eventWait() {
-	cout<<"KT::eventwait"<<endl<<endl<<endl;
+	cout<<"KT::eventWait"<<endl<<endl<<endl;
 
 	KernelEv::kernelEventList.getById(helper->id)->wait();
 }
 
 void KernelThread::eventSignal() {
-	cout<<"KT::eventsignal"<<endl<<endl<<endl;
+	cout<<"KT::eventSignal"<<endl<<endl<<endl;
 
 	KernelEv::kernelEventList.getById(helper->id)->signal();
 }
 
 void KernelThread::semaphoreConstruct() {
-	cout<<"KT::semaphoreconst"<<endl<<endl;
+	cout<<"KT::semaphoreConst"<<endl<<endl;
 
-	Semaphore* semaphore = 0;
-	#ifndef BCC_BLOCK_IGNORE
-		semaphore = (Semaphore*)MK_FP(helper->stackSegment, helper->stackOffset);
-	#endif
 	lock;
 	new KernelSem(helper->init);
 	unlock;
@@ -250,9 +232,6 @@ void KernelThread::semaphoreConstruct() {
 
 void KernelThread::semaphoreDestruct() {
 	cout<<"KT::semaphoreDest"<<endl<<endl;
-	lock;
-	delete KernelSem::kernelSemaphoreList.getById(helper->id);
-	unlock;
 	KernelSem::kernelSemaphoreList.removeById(helper->id);
 }
 
@@ -265,7 +244,7 @@ void KernelThread::semaphoreWait() {
 }
 
 void KernelThread::semaphoreValue() {
-	cout<<"KT::semaphoreVal"<<endl<<endl;
+	cout<<"KT::semaphoreVal "<<helper->id<<endl<<endl;
 
 	int temp = 0;
 	temp = KernelSem::kernelSemaphoreList.getById(helper->id)->val();

@@ -32,7 +32,10 @@ BlockList& BlockList::insert(PCB *pcb)
 }
 
 void BlockList::resumeAll(){
-	if(isEmpty()) return;
+	if(isEmpty()) {
+		return;
+
+	}
 	Elem *curr = head, *prev = 0;
 	while(curr!=0) {
 		curr->pcb->setStatus(PCB::READY);

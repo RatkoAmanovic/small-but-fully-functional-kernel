@@ -43,7 +43,7 @@ void KernelEv::block()
 {
 	lock;
 	myPCB->setStatus(PCB::BLOCKED);
-	dispatch();
+	KernelThread::threadDispatch();
 	unlock;
 }
 

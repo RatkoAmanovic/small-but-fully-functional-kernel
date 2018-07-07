@@ -17,7 +17,4 @@ if(PCB::globalLock == 0 && ContextSwitch::timePassed == 1) \
 const StackSize defaultStackSize = 4096;
 const Time defaultTimeSlice = 2; // default = 2*55ms
 
-static volatile unsigned helperOff = 0;
-static volatile unsigned helperSeg = 0;
-
 #endif /* __INCLUDE_H_ */

@@ -10,11 +10,6 @@ Semaphore::Semaphore(int init) {
 	Helper* helper = new Helper();
 	helper->function = semaphoreConstruct;
 	helper->init = init;
-	#ifndef BCC_BLOCK_IGNORE
-		helper->stackSegment = FP_SEG(this);
-		helper->stackOffset = FP_OFF(this);
-	#endif
-
 	systemCall(helper);
 	kernelSemId = helper->id;
 	delete helper;
@@ -29,10 +24,13 @@ Semaphore::~Semaphore() {
 }
 
 int Semaphore::wait(int toBlock) {
+	cout<<"S::Wait"<<endl;
 	int temp;
 	if(!toBlock) {
-		if (val()<=0)
+		if (val()<=0){
+			cout<<"Trebalo bi da se vrati ovde"<<endl;
 			return -1;
+		}
 	}
 	Helper* helper = new Helper();
 	helper->function = semaphoreWait;
@@ -52,6 +50,7 @@ void Semaphore::signal() {
 }
 
 int Semaphore::val() const {
+	cout<<"S::Val"<<endl;
 	int temp;
 	Helper* helper = new Helper();
 	helper->function = semaphoreValue;
@@ -59,6 +58,7 @@ int Semaphore::val() const {
 	systemCall(helper);
 	temp = helper->init;
 	delete helper;
+	cout<<"S::Val returned "<<temp<<endl;
 	return temp;
 }
 

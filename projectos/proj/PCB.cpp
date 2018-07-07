@@ -10,12 +10,16 @@
 unsigned PCB::ID = 0;
 const StackSize PCB::MIN_PCB_STACK_SIZE = 0x400;
 const StackSize PCB::MAX_PCB_STACK_SIZE = 0x1000;
-PCB* PCB::running = NULL;
+PCB* PCB::running = 0;
 int PCB::globalLock = 0;
 SleepList PCB::sleepingList = SleepList();
 BlockList PCB::pcbList = BlockList();
 
 PCB::PCB(Thread* thread, StackSize stackSize, Time timeSlice) : thread(thread),stackSize(stackSize),timeSlice(timeSlice) {
+	cout<<"Created PCB with id"<<ID<<endl;
+	if(stackSize==0){
+		cout<<"Created IdlePCB "<<ID<<endl;
+	}
 	id = ID++;
 	localLock = 0;
 	if(timeSlice==0)
@@ -100,14 +104,14 @@ PCB* PCB::getRuning() {
 }
 
 void PCB::waitToComplete() {
-	cout<<"PCB::waitToComplete "<<running->id<<endl;
-	if(running == this || status==PCB::FINISHED || running->thread == IdleThread::getIdleThread())
+	cout<<"PCB::waitToComplete "<<running->id<<endl<<endl;
+	if(running != this && status!=PCB::FINISHED && running->thread->getId()!=PCB::getIdleThreadId())
 	{
-		return;
-	}
+
 	running->setStatus(PCB::BLOCKED);
 	blockedList.insert(running);
 	KernelThread::threadDispatch();
+	}
 }
 
 void PCB::sleep(Time timeToSleep) {
@@ -127,7 +131,7 @@ unsigned PCB::getId() {
 }
 
 int PCB::getIdleThreadId() {
-	return IdleThread::idleThread->getId();
+	return 2;
 }
 
 void PCB::wrapper() {

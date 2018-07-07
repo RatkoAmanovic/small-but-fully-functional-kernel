@@ -14,11 +14,6 @@ Event::Event(IVTNo ivtNo) {
 	Helper* helper = new Helper();
 	helper->function = eventConstruct;
 	helper->ivtNo = ivtNo;
-	#ifndef BCC_BLOCK_IGNORE
-		helper->stackSegment = FP_SEG(this);
-		helper->stackOffset = FP_OFF(this);
-	#endif
-
 	systemCall(helper);
 	kernelEvId = helper->id;
 	delete helper;

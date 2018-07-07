@@ -24,46 +24,42 @@ KernelSem::~KernelSem() {
 }
 
 int KernelSem::wait() {
+	cout<<"KS::Wait"<<endl;
 	int temp;
-	lock;
 	value--;
 	if(value<0) {
-		block();
 		temp = 1;
+		block();
 	}
 	else
 		temp = 0;
-	unlock;
+	cout<<"KS::Wait::temp = "<<temp<<endl;
 	return temp;
 }
 
 void KernelSem::signal() {
-	lock;
+	cout<<"KS::Signal"<<endl;
 	if(value++ < 0)
 		deblock();
-	unlock;
 }
 
 int KernelSem::val() const {
+	cout<<"KS::Val"<<endl;
 	return value;
 }
 
 void KernelSem::block() {
-	lock;
 	PCB::running->setStatus(PCB::BLOCKED);
 	blockedList.insert(PCB::running);
-	dispatch();
-	unlock;
+	KernelThread::threadDispatch();
 }
 
 void KernelSem::deblock() {
-	lock;
 	PCB *pcb = blockedList.takeFirst();
 	if(pcb!=0) {
 		pcb->setStatus(PCB::READY);
 		Scheduler::put(pcb);
 	}
-	unlock;
 }
 
 unsigned KernelSem::getId(){

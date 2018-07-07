@@ -19,11 +19,11 @@ int main(int argc, char *argv[]) {
 	cout<<"Pravi kernel"<<endl;
 	KernelThread::getKernelThread();
 
-//	cout<<"Pravi main"<<endl;
-//	MainThread::getMainThread();
-//
-//	cout<<"Postavi parametre main"<<endl;
-//	MainThread::mainThread->setUserMainArguments(argc, argv);
+	cout<<"Pravi main"<<endl;
+	MainThread::getMainThread();
+
+	cout<<"Postavi parametre main"<<endl;
+	MainThread::mainThread->setUserMainArguments(argc, argv);
 
 	cout<<"Pravi mainpcb"<<endl;
 	PCB* mainPCB = new PCB(0,0,1);
@@ -36,26 +36,38 @@ int main(int argc, char *argv[]) {
 	ContextSwitch::inic();
 
 	cout<<"Pravi a"<<endl;
-	ThreadA** niz = new ThreadA*[100];
 
-	   for (int i = 0; i<100; i++){
-		   niz[i] = new ThreadA();
-		   niz[i]->start();
-	   }
-	   for(int j = 0; j<200; j++){
-		   niz[j]->waitToComplete();
-	   }
-
-	   cout<<"Finished All"<<endl<<endl<<endl<<endl<<endl;
+//
+//	int numOfThreads = 200;
+//	ThreadA** niz = new ThreadA*[numOfThreads];
+//
+//
+//	   for (int i = 0; i<numOfThreads; i++){
+//		   niz[i] = new ThreadA();
+//		   niz[i]->start();
+//	   }
+//	   cout<<"PROSLI STARTOVI###################################################"<<endl<<endl<<endl<<endl<<endl<<endl<<endl<<endl<<endl<<endl<<endl;
+//	   for (int k = 0; k<numOfThreads; k++) niz[k]->s->wait(0);
+//
+//	   cout<<"PROSLI WAITOVI###################################################"<<endl<<endl<<endl<<endl<<endl<<endl<<endl<<endl<<endl<<endl<<endl;
+//	  	    for (int j = 0; j<numOfThreads; niz[j++]->waitToComplete());
+//	   for(int j = 0; j<50; j++){
+//		   niz[j]->waitToComplete();
+//		   cout<<"MAIN::wtc - "<<j<<endl;
+//	   }
+//	   niz[5]->waitToComplete();
+//	   cout<<"PROSLI WAITTOKOMPLITOVI"<<endl<<endl<<endl;
+//
+//	   cout<<"Finished All"<<endl<<endl<<endl<<endl<<endl;
 //	ThreadA* a = new ThreadA();
 //	a->start();
 //	a->waitToComplete();
 
 
 //
-//	MainThread::mainThread->waitToComplete();
-//
-//	int returnValue = MainThread::userMainReturnValue;
+	MainThread::mainThread->waitToComplete();
+
+	int returnValue = MainThread::userMainReturnValue;
 
 	ContextSwitch::restore();
 
