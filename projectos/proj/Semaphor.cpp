@@ -24,11 +24,11 @@ Semaphore::~Semaphore() {
 }
 
 int Semaphore::wait(int toBlock) {
-	cout<<"S::Wait"<<endl;
+//	cout<<"S::Wait"<<endl;
 	int temp;
 	if(!toBlock) {
 		if (val()<=0){
-			cout<<"Trebalo bi da se vrati ovde"<<endl;
+//			cout<<"Trebalo bi da se vrati ovde"<<endl;
 			return -1;
 		}
 	}
@@ -50,7 +50,7 @@ void Semaphore::signal() {
 }
 
 int Semaphore::val() const {
-	cout<<"S::Val"<<endl;
+//	cout<<"S::Val"<<endl;
 	int temp;
 	Helper* helper = new Helper();
 	helper->function = semaphoreValue;
@@ -58,7 +58,7 @@ int Semaphore::val() const {
 	systemCall(helper);
 	temp = helper->init;
 	delete helper;
-	cout<<"S::Val returned "<<temp<<endl;
+//	cout<<"S::Val returned "<<temp<<endl;
 	return temp;
 }
 

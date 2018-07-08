@@ -19,8 +19,10 @@ int main(int argc, char *argv[]) {
 	cout<<"Pravi kernel"<<endl;
 	KernelThread::getKernelThread();
 
-	cout<<"Pravi main"<<endl;
-	MainThread::getMainThread();
+
+	IdleThread::getIdleThread();
+	cout<<"prosao idle"<<endl;
+
 
 	cout<<"Postavi parametre main"<<endl;
 	MainThread::mainThread->setUserMainArguments(argc, argv);
@@ -30,41 +32,11 @@ int main(int argc, char *argv[]) {
 	mainPCB->setStatus(PCB::RUNNING);
 	PCB::running = mainPCB;
 
-	IdleThread::getIdleThread();
-	cout<<"prosao idle"<<endl;
+	cout<<"Pravi main"<<endl;
+	MainThread::getMainThread()->start();
 
 	ContextSwitch::inic();
 
-	cout<<"Pravi a"<<endl;
-
-//
-//	int numOfThreads = 200;
-//	ThreadA** niz = new ThreadA*[numOfThreads];
-//
-//
-//	   for (int i = 0; i<numOfThreads; i++){
-//		   niz[i] = new ThreadA();
-//		   niz[i]->start();
-//	   }
-//	   cout<<"PROSLI STARTOVI###################################################"<<endl<<endl<<endl<<endl<<endl<<endl<<endl<<endl<<endl<<endl<<endl;
-//	   for (int k = 0; k<numOfThreads; k++) niz[k]->s->wait(0);
-//
-//	   cout<<"PROSLI WAITOVI###################################################"<<endl<<endl<<endl<<endl<<endl<<endl<<endl<<endl<<endl<<endl<<endl;
-//	  	    for (int j = 0; j<numOfThreads; niz[j++]->waitToComplete());
-//	   for(int j = 0; j<50; j++){
-//		   niz[j]->waitToComplete();
-//		   cout<<"MAIN::wtc - "<<j<<endl;
-//	   }
-//	   niz[5]->waitToComplete();
-//	   cout<<"PROSLI WAITTOKOMPLITOVI"<<endl<<endl<<endl;
-//
-//	   cout<<"Finished All"<<endl<<endl<<endl<<endl<<endl;
-//	ThreadA* a = new ThreadA();
-//	a->start();
-//	a->waitToComplete();
-
-
-//
 	MainThread::mainThread->waitToComplete();
 
 	int returnValue = MainThread::userMainReturnValue;
@@ -72,7 +44,7 @@ int main(int argc, char *argv[]) {
 	ContextSwitch::restore();
 
 	delete mainPCB;
-//	delete MainThread::mainThread;
+	delete MainThread::mainThread;
 	cout<<"KRAJ"<<endl;
 	return 0;
 }

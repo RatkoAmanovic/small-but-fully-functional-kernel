@@ -20,7 +20,7 @@ void ThreadA::run(){
 			for(int i= 0; i<5000;i++){
 				if (i%1000 == 0){
 		     	cout<<"nit"<<id<<" "<<i<<endl;
-		     	sleep(id);
+		     	sleep(200-id);
 				}
 			}
 	s->signal();

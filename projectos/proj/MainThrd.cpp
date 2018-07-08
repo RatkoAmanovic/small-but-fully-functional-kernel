@@ -6,7 +6,7 @@ int MainThread::argumentCount = 0;
 int MainThread::userMainReturnValue = 0;
 
 MainThread::MainThread() : Thread(defaultStackSize,1) {
-	cout<<"MT::const"<<endl;
+//	cout<<"MT::const"<<endl;
 }
 
 MainThread::~MainThread() {
@@ -30,6 +30,6 @@ MainThread* MainThread::getMainThread()
 
 void MainThread::run()
 {
-	cout<<"MT::run user main ocu da se zove"<<endl;
+//	cout<<"MT::run user main ocu da se zove"<<endl;
 	userMainReturnValue = userMain(argumentCount, argumentValue);
 }

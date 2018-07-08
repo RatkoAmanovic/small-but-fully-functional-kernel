@@ -24,7 +24,7 @@ KernelSem::~KernelSem() {
 }
 
 int KernelSem::wait() {
-	cout<<"KS::Wait"<<endl;
+//	cout<<"KS::Wait"<<endl;
 	int temp;
 	value--;
 	if(value<0) {
@@ -33,18 +33,18 @@ int KernelSem::wait() {
 	}
 	else
 		temp = 0;
-	cout<<"KS::Wait::temp = "<<temp<<endl;
+//	cout<<"KS::Wait::temp = "<<temp<<endl;
 	return temp;
 }
 
 void KernelSem::signal() {
-	cout<<"KS::Signal"<<endl;
+//	cout<<"KS::Signal"<<endl;
 	if(value++ < 0)
 		deblock();
 }
 
 int KernelSem::val() const {
-	cout<<"KS::Val"<<endl;
+//	cout<<"KS::Val"<<endl;
 	return value;
 }
 

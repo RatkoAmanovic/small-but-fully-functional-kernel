@@ -119,6 +119,8 @@ void Consumer::run () {
 
 int userMain (int argc, char* argv[])
 {
+
+	cout<<"USLO U MAIN SKROZ"<<endl<<endl<<endl<<endl<<endl<<endl<<endl<<endl<<endl<<endl<<endl<<endl;
 	BoundedBuffer *buff;
 	Consumer *con;
 	
@@ -129,6 +131,7 @@ int userMain (int argc, char* argv[])
 		return -1;
 	}
 	int buffSize = atoi(argv[1]);
+	cout<<"BuffSize = "<<buffSize;
 	N = atoi(argv[2]);
 //	N = N>19 ? 19 : N;
 	TIME_SLICE = atoi(argv[3]);

@@ -148,7 +148,7 @@ void interrupt KernelThread::switchToUser(...) {
 }
 
 void KernelThread::threadConstruct() {
-	cout<<"KT::threadConst "<<PCB::ID<<endl;
+//	cout<<"KT::threadConst "<<PCB::ID<<endl;
 	Thread* thread = 0;
 
 	#ifndef BCC_BLOCK_IGNORE
@@ -161,12 +161,12 @@ void KernelThread::threadConstruct() {
 }
 
 void KernelThread::threadDestruct() {
-	cout<<"KT::threadDestruct "<<helper->id<<endl;
+//	cout<<"KT::threadDestruct "<<helper->id<<endl;
 	PCB::pcbList.removeById(helper->id);
 }
 
 void KernelThread::threadStart() {
-	cout<<"KT::threadStart "<<helper->id<<endl;
+//	cout<<"KT::threadStart "<<helper->id<<endl;
 
 	PCB* myPCB = PCB::pcbList.getById(helper->id);
 	myPCB->setStatus(PCB::READY);
@@ -174,28 +174,28 @@ void KernelThread::threadStart() {
 }
 
 void KernelThread::threadWaitToComplete() {
-	cout<<"KT::threadWaitToComplete "<<helper->id<<endl;
+//	cout<<"KT::threadWaitToComplete "<<helper->id<<endl;
 	PCB::pcbList.getById(helper->id)->waitToComplete();
 }
 
 void KernelThread::threadSleep() {
-	cout<<"KT::threadSleep "<<helper->timeSlice<<endl;
+//	cout<<"KT::threadSleep "<<helper->timeSlice<<endl;
 	PCB::running->sleep(helper->timeSlice);
 }
 
 void KernelThread::threadDispatch() {
-	cout<<"KT::threadDispatch "<<endl;
+//	cout<<"KT::threadDispatch "<<endl;
 	kernelThreadRequestedSwitch = 1;
 }
 
 void KernelThread::threadResumeAll() {
-	cout<<"KT::threadResumeAll "<<PCB::running->getId()<<endl;
+//	cout<<"KT::threadResumeAll "<<PCB::running->getId()<<endl;
 	PCB::running->setStatus(PCB::FINISHED);
 	PCB::pcbList.getById(helper->id)->blockedList.resumeAll();
 }
 
 void KernelThread::eventConstruct() {
-	cout<<"KT::eventConst"<<endl<<endl<<endl;
+//	cout<<"KT::eventConst"<<endl<<endl<<endl;
 
 	lock;
 	new KernelEv(helper->ivtNo);
@@ -204,25 +204,25 @@ void KernelThread::eventConstruct() {
 }
 
 void KernelThread::eventDestruct() {
-	cout<<"KT::eventDest"<<endl<<endl<<endl;
+//	cout<<"KT::eventDest"<<endl<<endl<<endl;
 
 	KernelEv::kernelEventList.removeById(helper->id);
 }
 
 void KernelThread::eventWait() {
-	cout<<"KT::eventWait"<<endl<<endl<<endl;
+//	cout<<"KT::eventWait"<<endl<<endl<<endl;
 
 	KernelEv::kernelEventList.getById(helper->id)->wait();
 }
 
 void KernelThread::eventSignal() {
-	cout<<"KT::eventSignal"<<endl<<endl<<endl;
+//	cout<<"KT::eventSignal"<<endl<<endl<<endl;
 
 	KernelEv::kernelEventList.getById(helper->id)->signal();
 }
 
 void KernelThread::semaphoreConstruct() {
-	cout<<"KT::semaphoreConst"<<endl<<endl;
+//	cout<<"KT::semaphoreConst"<<endl<<endl;
 
 	lock;
 	new KernelSem(helper->init);
@@ -231,12 +231,12 @@ void KernelThread::semaphoreConstruct() {
 }
 
 void KernelThread::semaphoreDestruct() {
-	cout<<"KT::semaphoreDest"<<endl<<endl;
+//	cout<<"KT::semaphoreDest"<<endl<<endl;
 	KernelSem::kernelSemaphoreList.removeById(helper->id);
 }
 
 void KernelThread::semaphoreWait() {
-	cout<<"KT::semaphoreWait"<<endl<<endl;
+//	cout<<"KT::semaphoreWait"<<endl<<endl;
 
 	int temp = 0;
 	temp = KernelSem::kernelSemaphoreList.getById(helper->id)->wait();
@@ -244,7 +244,7 @@ void KernelThread::semaphoreWait() {
 }
 
 void KernelThread::semaphoreValue() {
-	cout<<"KT::semaphoreVal "<<helper->id<<endl<<endl;
+//	cout<<"KT::semaphoreVal "<<helper->id<<endl<<endl;
 
 	int temp = 0;
 	temp = KernelSem::kernelSemaphoreList.getById(helper->id)->val();
@@ -252,7 +252,7 @@ void KernelThread::semaphoreValue() {
 }
 
 void KernelThread::semaphoreSignal() {
-	cout<<"KT::semaphoreSingal"<<endl<<endl;
+//	cout<<"KT::semaphoreSingal"<<endl<<endl;
 
 	KernelSem::kernelSemaphoreList.getById(helper->id)->signal();
 }
