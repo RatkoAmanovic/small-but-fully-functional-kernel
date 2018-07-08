@@ -16,23 +16,23 @@
 int main(int argc, char *argv[]) {
 	KernelThread::inic();
 
-	cout<<"Pravi kernel"<<endl;
+//	cout<<"Pravi kernel"<<endl;
 	KernelThread::getKernelThread();
 
 
 	IdleThread::getIdleThread();
-	cout<<"prosao idle"<<endl;
+//	cout<<"prosao idle"<<endl;
 
 
-	cout<<"Postavi parametre main"<<endl;
+//	cout<<"Postavi parametre main"<<endl;
 	MainThread::mainThread->setUserMainArguments(argc, argv);
 
-	cout<<"Pravi mainpcb"<<endl;
+//	cout<<"Pravi mainpcb"<<endl;
 	PCB* mainPCB = new PCB(0,0,1);
 	mainPCB->setStatus(PCB::RUNNING);
 	PCB::running = mainPCB;
 
-	cout<<"Pravi main"<<endl;
+//	cout<<"Pravi main"<<endl;
 	MainThread::getMainThread()->start();
 
 	ContextSwitch::inic();
@@ -45,6 +45,6 @@ int main(int argc, char *argv[]) {
 
 	delete mainPCB;
 	delete MainThread::mainThread;
-	cout<<"KRAJ"<<endl;
+//	cout<<"KRAJ"<<endl;s
 	return 0;
 }
