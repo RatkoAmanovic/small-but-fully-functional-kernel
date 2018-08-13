@@ -20,6 +20,8 @@ volatile PCB* KernelThread::myPCB = 0;
 volatile Function* KernelThread::functions = 0;
 const int KernelThread::SWITCH_TO_KERNEL_ENTRY = 0x60;
 const int KernelThread::SWITCH_TO_USER_ENTRY = 0x61;
+InterruptFunction KernelThread::oldRoutineToKernel = 0;
+InterruptFunction KernelThread::oldRoutineToUser = 0;
 
 volatile unsigned tempStackSegmentKT = 0;
 volatile unsigned tempStackPointerKT = 0;
@@ -48,7 +50,9 @@ KernelThread::KernelThread() {
 	functions[15] = KernelThread::semaphoreDestruct;
 }
 
-KernelThread::~KernelThread() {}
+KernelThread::~KernelThread() {
+	restore();
+}
 
 KernelThread* KernelThread::getKernelThread() {
 	if (kernelThread == 0) {
@@ -66,7 +70,6 @@ void KernelThread::run() {
 }
 
 void interrupt KernelThread::switchToKernel(...) {
-
 	#ifndef BCC_BLOCK_IGNORE
 		asm{
 			mov tempStackSegmentKT, ss
@@ -155,13 +158,12 @@ void KernelThread::threadConstruct() {
 		thread = (Thread*)MK_FP(helper->stackSegment, helper->stackOffset);
 	#endif
 	lock;
-	new PCB(thread, helper->timeSlice, helper->stackSize);
+	new PCB(thread, helper->stackSize, helper->timeSlice);
 	unlock;
 	helper->id = PCB::ID - 1; //when inserting pcb his id will be id = ID++;
 }
 
 void KernelThread::threadDestruct() {
-//	cout<<"KT::threadDestruct "<<helper->id<<endl;
 	PCB::pcbList.removeById(helper->id);
 }
 
@@ -261,8 +263,23 @@ void KernelThread::inic() {
 #ifndef BCC_BLOCK_IGNORE
 	asm pushf;
 	asm cli;
+	oldRoutineToKernel = getvect(SWITCH_TO_KERNEL_ENTRY);
+	oldRoutineToUser = getvect(SWITCH_TO_USER_ENTRY);
 	setvect(SWITCH_TO_KERNEL_ENTRY, switchToKernel);
 	setvect(SWITCH_TO_USER_ENTRY, switchToUser);
 	asm popf;
 #endif
+}
+
+void KernelThread::restore(){
+#ifndef BCC_BLOCK_IGNORE
+	if(oldRoutineToKernel != 0) {
+		setvect(SWITCH_TO_KERNEL_ENTRY, oldRoutineToKernel);
+		oldRoutineToKernel = 0;
+	}
+	if(oldRoutineToUser != 0) {
+		setvect(SWITCH_TO_USER_ENTRY, oldRoutineToKernel);
+		oldRoutineToUser = 0;
+	}
+	#endif
 }

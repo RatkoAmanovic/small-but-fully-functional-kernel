@@ -19,6 +19,7 @@ IVTEntry::IVTEntry(IVTNo ivtNo, void interrupt (*newRoutine)(...)) : ivtNo(ivtNo
 }
 
 IVTEntry::~IVTEntry() {
+	cout<<"IVTE::Destructor"<<endl;
 	lock;
 	IVTEntry::ivTable->setEntry(ivtNo, 0);
 	#ifndef BCC_BLOCK_IGNORE

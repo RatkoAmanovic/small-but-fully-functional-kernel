@@ -13,18 +13,16 @@ volatile unsigned tempStackSegment = 0;
 volatile unsigned tempStackPointer = 0;
 volatile unsigned tempBasePointer = 0;
 
-const int ContextSwitch::OLD_TIMER_IVTE = 8;
+const int ContextSwitch::OLD_TIMER_IVTE = 0x8;
 
 void tick();
 
-void ContextSwitch::requestSwitch()
-{
+void ContextSwitch::requestSwitch() {
 	switchRequested = 1;
 }
 
-void interrupt ContextSwitch::timer(...){
-	if(PCB::running->noTimer==1)
-	{
+void interrupt ContextSwitch::timer(...) {
+	if(PCB::running->noTimer==1) {
 		if(!switchRequested) {
 			tick();
 			oldTimer();
@@ -79,19 +77,17 @@ void interrupt ContextSwitch::timer(...){
 		}
 	}
 
-	if(!switchRequested)
-	{
+	if(!switchRequested) {
 		tick();
 		oldTimer();
 		PCB::sleepingList.tick();
 		if(counter>0) counter--;
 	}
 
-	if(!switchRequested && counter == 1 && PCB::globalLock > 0)
-		{
+	if(!switchRequested && counter == 1 && PCB::globalLock > 0) {
 		timePassed = 1;
 		return;
-		}
+	}
 
 	if((counter == 0 && PCB::globalLock == 0) || switchRequested) {
 
@@ -145,8 +141,7 @@ void interrupt ContextSwitch::timer(...){
 }
 
 
-void ContextSwitch::inic()
-{
+void ContextSwitch::inic() {
 	#ifndef BCC_BLOCK_IGNORE
 		asm pushf;
 		asm cli;
@@ -156,8 +151,7 @@ void ContextSwitch::inic()
 	#endif
 }
 
-void ContextSwitch::restore()
-{
+void ContextSwitch::restore() {
 	#ifndef BCC_BLOCK_IGNORE
 		asm pushf;
 		asm cli;

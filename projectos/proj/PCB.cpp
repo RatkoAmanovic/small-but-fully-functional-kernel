@@ -104,13 +104,17 @@ PCB* PCB::getRuning() {
 }
 
 void PCB::waitToComplete() {
-//	cout<<"PCB::waitToComplete "<<running->id<<endl<<endl;
-	if(running != this && status!=PCB::FINISHED && running->thread->getId()!=PCB::getIdleThreadId())
-	{
+//	if(status!=FINISHED)
+//	cout<<"PCB::waitToComplete "<<endl;
+//	cout<<"PCB::waitToComplete "<<running->id<<endl<<id<<endl;
+	if(running != this && status!=FINISHED && running->thread->getId()!=PCB::getIdleThreadId()) {
+//	if(running != this && status!=PCB::FINISHED) {
 
-	running->setStatus(PCB::BLOCKED);
-	blockedList.insert(running);
-	KernelThread::threadDispatch();
+//	if(status!=PCB::FINISHED){
+//		cout<<"PCB::waitToComplete::Uslo"<<endl;
+		running->setStatus(PCB::BLOCKED);
+		blockedList.insert(running);
+		KernelThread::threadDispatch();
 	}
 }
 

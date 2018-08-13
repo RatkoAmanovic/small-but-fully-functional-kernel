@@ -15,7 +15,8 @@ class IVTable {
 		void setEntry(IVTNo ivtNo, IVTEntry *ivtEntry);
 		IVTEntry* getIVTEntry(IVTNo ivtNo);
 	private:
-		IVTEntry* ivTable[256];
+		enum {TABLE_SIZE = 256};
+		IVTEntry* ivTable[TABLE_SIZE];
 };
 
 #endif /* __IVTABLE_H_ */

@@ -38,9 +38,12 @@ int KernelSem::wait() {
 }
 
 void KernelSem::signal() {
-//	cout<<"KS::Signal"<<endl;
-	if(value++ < 0)
+//	cout<<"KS::Signal"<<endl;//<<value<<endl<<endl;
+	if(value++ < 0){
+//		cout<<"KS::Signal::Pre debloka"<<endl;
 		deblock();
+//		cout<<"KS::Signal::Posle debloka"<<endl;
+	}
 }
 
 int KernelSem::val() const {

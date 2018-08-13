@@ -23,36 +23,26 @@ KernelEv::KernelEv(IVTNo ivtNo) : ivtNo(ivtNo), value(0) {
 KernelEv::~KernelEv() {}
 
 void KernelEv::wait() {
-	lock;
 	if(myPCB == PCB::running)
 		if(value == 1)
 			value--;
 		else
 			block();
-	unlock;
 }
 
 void KernelEv::signal() {
-	lock;
 	if(value == 0) deblock();
 	value = 1;
-	unlock;
 }
 
-void KernelEv::block()
-{
-	lock;
+void KernelEv::block() {
 	myPCB->setStatus(PCB::BLOCKED);
 	KernelThread::threadDispatch();
-	unlock;
 }
 
-void KernelEv::deblock()
-{
-	lock;
+void KernelEv::deblock() {
 	myPCB->setStatus(PCB::READY);
 	Scheduler::put(myPCB);
-	unlock;
 }
 
 unsigned KernelEv::getId() {

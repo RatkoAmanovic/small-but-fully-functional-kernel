@@ -19,7 +19,6 @@ int KernelSemList::isEmpty() {
 
 KernelSemList& KernelSemList::insert(KernelSem *semaphore)
 {
-	lock;
 	Elem* newElem = new Elem(semaphore);
 	if(head == 0) {
 		head = newElem;
@@ -29,7 +28,6 @@ KernelSemList& KernelSemList::insert(KernelSem *semaphore)
 		tail->next = newElem;
 		tail = tail->next;
 	}
-	unlock;
 	return *this;
 }
 
@@ -94,6 +92,8 @@ void KernelSemList::removeById(int id) {
 				}
 				else {
 					if(curr!=0) {
+						if(curr == tail)
+							tail = prev;
 						prev->next = curr->next;
 						delete curr;
 					}

@@ -1,175 +1,146 @@
-//===========================================================================//
-//   Project: Projekat iz Operativnih sistema 1
-//   File:    user.cpp
-//   Date:    Jun 2018
-//===========================================================================//
 #include <iostream.h>
-#include <stdlib.h>
+#include "thread.h"
+#include "semaphor.h"
 
-#include <event.h>
-#include "bounded.h"
-#include "intLock.h"
-#include "keyevent.h"
-#include "user.h"
-
-//---------------------------------------------------------------------------//
-//  Ovo se menja u testu
-//---------------------------------------------------------------------------//
-
-Time TIME_SLICE = 2;   // 0 ili defaultTimeSlice
-
-int N = 3;            // 1 <= N <= 19
-
-//---------------------------------------------------------------------------//
-
-volatile int theEnd=0;
-
-class Producer : public Thread {
-public:
-	Producer (BoundedBuffer* bb, char y, Time time_slice);
-	virtual ~Producer() {waitToComplete(); }
-protected:
-	virtual void run ();
-	char produce() {return x;}; // Produce an item
-
-private:
-	BoundedBuffer* myBuffer;
-	char x;
-};
-
-
-
-//---------------------------------------------------------------------------//
-class Consumer : public Thread {
-public:
-	Consumer (BoundedBuffer* bb) : Thread(defaultStackSize, 0), myBuffer(bb) {}
-	virtual ~Consumer() {waitToComplete(); }
-
-protected:
-	virtual void run ();
-	void consume(char p); // Consume an item
-
-private:
-	BoundedBuffer* myBuffer;
-};
-
-
-
-
-//---------------------------------------------------------------------------//
-// Korisnicki program mora obavezno da definise ovu f-ju
-//---------------------------------------------------------------------------//
-void tick(){
-}
-
-//---------------------------------------------------------------------------//
-
-
-Producer::Producer (BoundedBuffer* bb, char y, Time time_slice) 
-: Thread(defaultStackSize, time_slice),myBuffer(bb), x(y) {}
-	
-	void Producer::run () {
-	while(!theEnd) {
-		char d = produce();
-		myBuffer->append(d);
-		Thread::sleep(10);
-	}
-}
-
-//---------------------------------------------------------------------------//
-
-
-void Consumer::consume(char p) {
-	intLock
-	cout<<p<<" ";
-	intUnlock
-} // Consume an item
-
-void Consumer::run () {
-		
-	int i = 0;
-	while(!theEnd) {
-		char d = myBuffer->take();
-		consume(d);
-		if (i++ == 40) {
-			Thread::sleep(5);
-			i = 0;
-		}else for(int j=0;j<200;j++);
-	}
- 
-	intLock
-	cout<<endl<<"ESC pressed - empty the buffer!"<<endl;
-	intUnlock
-	
-	while (myBuffer->fullCount()){
-		char d = myBuffer->take();
-		consume(d);
-		dispatch();
-	}
-	
-	
-	intLock
-	cout<<endl<<"Happy End"<<endl;
-	intUnlock
-}
-
-
-
-
-
-int userMain (int argc, char* argv[])
+void tick()
 {
 
-	BoundedBuffer *buff;
-	Consumer *con;
-	
-	intLock
-	if(argc <2){
-		cout<<"Invalid input!"<<endl;
-		intUnlock
-		return -1;
-	}
-	int buffSize = atoi(argv[1]);
-	N = atoi(argv[2]);
-//	N = N>19 ? 19 : N;
-	TIME_SLICE = atoi(argv[3]);
-	
-	if(buffSize<N) {
-		cout<<"Number of Produsers is larger then Buffer size!"<<endl;
-		intUnlock
-		return 1;
-	}
-
-	buff = new BoundedBuffer(buffSize);
-	Producer **pro = new Producer*[N];
-	KeyboardEvent* kev;
-	int i;
-	
-	con = new Consumer(buff);
-	  
-	con->start();
-
-	for (i=0; i<N; i++){
-		pro[i] = new Producer(buff,'0'+i, TIME_SLICE);
-		pro[i]->start();
-	}
-  
-	kev = new KeyboardEvent(buff);
-	intUnlock
-	
-	kev->start();
-		
-	for (i=0; i<N; i++){
-		delete pro[i];
-	}  
-	delete [] pro;
-	delete kev;
-	delete con;
-	delete buff;
-
-	intLock
-	cout<<"userMain finished!"<<endl;
-	intUnlock
-	return 0;
 }
-//---------------------------------------------------------------------------//
+
+class BoundedBuffer
+{
+	int *a;
+	int cap;
+	int head,tail;
+	Semaphore mutexHead,mutexTail,Item,Space;
+public:
+	BoundedBuffer(int c):mutexHead(1),mutexTail(1),Item(0),Space(c)
+	{
+		a=new int[cap=c];
+		head=tail=0;
+	}
+
+	void put(int data)
+	{
+		Space.wait();
+		mutexHead.wait();
+		a[head]=data;
+		head=(head+1)%cap;
+		mutexHead.signal();
+		Item.signal();
+	}
+
+	int get()
+	{
+		Item.wait();
+		mutexTail.wait();
+		int tmp=a[tail];
+		tail=(tail+1)%cap;
+		mutexTail.signal();
+		Space.signal();
+		return tmp;
+	}
+	~BoundedBuffer()
+	{
+		cout<<"BB::Destructor"<<endl;
+		delete[] a;
+	}
+};
+
+class Producer:public Thread
+{
+	BoundedBuffer *b;
+	int k;
+	int id;
+	Semaphore *io;
+public:
+	Producer(BoundedBuffer *bb,int kk,Semaphore *ii,int idd):b(bb),k(kk),io(ii),id(idd){}
+	void run()
+	{
+		for(int i=0;i<k;i++)
+		{
+			io->wait();
+			cout<<"PROIZVODJAC "<<id<<" PROIZVODI "<<i<<endl;
+			io->signal();
+			b->put(i);
+		}
+		io->wait();
+		cout<<"PROIZVODJAC "<<id<<" GOTOV"<<endl;
+		io->signal();
+
+	}
+	~Producer()
+	{
+		waitToComplete();
+	}
+};
+
+class Consumer:public Thread
+{
+	BoundedBuffer *b;
+	Semaphore *io;
+	int k;
+	int id;
+public:
+	Consumer(BoundedBuffer *bb,int kk,Semaphore *ii,int idd):b(bb),k(kk),io(ii),id(idd){}
+	void run()
+	{
+		for(int i=0;i<k;i++)
+		{
+			int tmp=b->get();
+			io->wait();
+			cout<<"POTROSAC "<<id<<" TROSI "<<tmp<<endl;
+			io->signal();
+		}
+		io->wait();
+		cout<<"POTROSAC "<<id<<" GOTOV"<<endl;
+		io->signal();
+	}
+	~Consumer()
+	{
+		waitToComplete();
+	}
+};
+
+
+void userMain(int argc,char *argv[])
+{
+	Semaphore *io=new Semaphore(1);
+	BoundedBuffer *b=new BoundedBuffer(10);
+
+	Producer **p;
+	Consumer **c;
+	int np=1;
+	int nc=np*3;
+
+	p=new Producer*[np];
+	c=new Consumer*[nc];
+
+	for(int i=0;i<np;i++)
+	{
+		p[i]=new Producer(b,30,io,i+1);
+		p[i]->start();
+	}
+	for(int j=0;j<nc;j++)
+	{
+		c[j]=new Consumer(b,10,io,j+1);
+		c[j]->start();
+	}
+	cout<<"GLAVNA SPAVA"<<endl;
+	Thread::sleep(0);
+	cout<<"NE SPAVA JER JE VREME NEGATIVNO"<<endl;
+	Thread::sleep(5);
+	cout<<"SPAVALA JE 5"<<endl<<endl<<endl<<endl<<endl;
+	for(int k=0;k<np;k++) delete p[k];
+	for(int l=0;l<nc;l++) delete c[l];
+
+	delete p;
+	delete c;
+	delete b;
+
+	cout<<"Obrisala bafer"<<endl<<endl<<endl;
+		while(1);
+
+	delete io;
+	cout<<"GLAVNA GOTOVA"<<endl;
+}

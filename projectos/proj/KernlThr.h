@@ -11,6 +11,7 @@ public:
 	KernelThread();
 	~KernelThread();
 	static void inic();
+	static void restore();
 	static void run();
 
 
@@ -42,6 +43,8 @@ private:
 	static KernelThread* kernelThread;
 	static const int SWITCH_TO_KERNEL_ENTRY;
 	static const int SWITCH_TO_USER_ENTRY;
+	static InterruptFunction oldRoutineToKernel;
+	static InterruptFunction oldRoutineToUser;
 };
 
 #endif /* KERNLTHR_H_ */

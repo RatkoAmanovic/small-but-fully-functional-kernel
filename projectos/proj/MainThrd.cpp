@@ -10,7 +10,6 @@ MainThread::MainThread() : Thread(defaultStackSize,1) {
 }
 
 MainThread::~MainThread() {
-	waitToComplete();
 }
 
 int userMain(int argc, char *argv[]);

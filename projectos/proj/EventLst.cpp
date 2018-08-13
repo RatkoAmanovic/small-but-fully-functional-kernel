@@ -18,7 +18,6 @@ int KernelEvList::isEmpty() {
 
 KernelEvList& KernelEvList::insert(KernelEv *event)
 {
-	lock;
 	Elem* newElem = new Elem(event);
 	if(head == 0) {
 		head = newElem;
@@ -28,7 +27,6 @@ KernelEvList& KernelEvList::insert(KernelEv *event)
 		tail->next = newElem;
 		tail = tail->next;
 	}
-	unlock;
 	return *this;
 }
 
@@ -93,6 +91,8 @@ void KernelEvList::removeById(int id) {
 				}
 				else {
 					if(curr!=0) {
+						if(curr == tail)
+							tail = prev;
 						prev->next = curr->next;
 						delete curr;
 					}

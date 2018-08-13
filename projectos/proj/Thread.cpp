@@ -20,8 +20,8 @@ Thread::Thread(StackSize stackSize, Time timeSlice) {
 		helper->stackOffset = FP_OFF(this);
 	#endif
 	systemCall(helper);
-	pcbId = helper->id;
 	unlock;
+	pcbId = helper->id;
 	delete helper;
 }
 
@@ -29,10 +29,13 @@ Thread::Thread(int i, int j, int k) {
 }
 
 Thread::~Thread() {
+	waitToComplete();
 	Helper* helper = new Helper();
 	helper->function = threadDestruct;
 	helper->id = pcbId;
+	lock;
 	systemCall(helper);
+	unlock;
 	delete helper;
 }
 
@@ -40,7 +43,9 @@ void Thread::start() {
 	Helper* helper = new Helper();
 	helper->function = threadStart;
 	helper->id = pcbId;
+	lock;
 	systemCall(helper);
+	unlock;
 	delete helper;
 }
 
@@ -48,7 +53,9 @@ void Thread::waitToComplete() {
 	Helper* helper = new Helper();
 	helper->function = threadWaitToComplete;
 	helper->id = pcbId;
+	lock;
 	systemCall(helper);
+	unlock;
 	delete helper;
 }
 
@@ -56,7 +63,9 @@ void Thread::sleep(Time timeToSleep) {
 	Helper* helper = new Helper();
 	helper->function = threadSleep;
 	helper->timeSlice = timeToSleep;
+	lock;
 	systemCall(helper);
+	unlock;
 	delete helper;
 }
 
@@ -64,14 +73,18 @@ void Thread::resumeAll() {
 	Helper* helper = new Helper();
 	helper->function = threadResumeAll;
 	helper->id = pcbId;
+	lock;
 	systemCall(helper);
+	unlock;
 	delete helper;
 }
 
 void dispatch() {
 	Helper* helper = new Helper();
 	helper->function = threadDispatch;
+	lock;
 	systemCall(helper);
+	unlock;
 	delete helper;
 }
 

@@ -15,10 +15,9 @@ int BlockList::isEmpty() {
 	return head == 0;
 }
 
-BlockList& BlockList::insert(PCB *pcb)
-{
-	lock;
+BlockList& BlockList::insert(PCB *pcb) {
 	Elem* newElem = new Elem(pcb);
+
 	if(head == 0) {
 		head = newElem;
 		tail = head;
@@ -27,15 +26,13 @@ BlockList& BlockList::insert(PCB *pcb)
 		tail->next = newElem;
 		tail = tail->next;
 	}
-	unlock;
 	return *this;
 }
 
-void BlockList::resumeAll(){
-	if(isEmpty()) {
+void BlockList::resumeAll() {
+	if(isEmpty())
 		return;
 
-	}
 	Elem *curr = head, *prev = 0;
 	while(curr!=0) {
 		curr->pcb->setStatus(PCB::READY);
@@ -51,9 +48,10 @@ void BlockList::resumeAll(){
 	return;
 }
 
-PCB* BlockList::takeFirst()
-{
-	if(isEmpty()) return 0;
+PCB* BlockList::takeFirst() {
+	if(isEmpty())
+		return 0;
+
 	PCB *pcb = head->pcb;
 	if(head->next==0)
 	{
@@ -70,7 +68,9 @@ PCB* BlockList::takeFirst()
 }
 
 PCB* BlockList::getById(int id) {
-	if(isEmpty()) return 0;
+	if(isEmpty())
+		return 0;
+
 	Elem *curr = head;
 	PCB *pcb = 0;
 	while(curr!=0)
@@ -86,24 +86,28 @@ PCB* BlockList::getById(int id) {
 }
 
 void BlockList::removeById(int id) {
-	if(isEmpty()) return;
-		Elem *curr = head, *prev = 0;
-		while(curr!=0)
+	if(isEmpty())
+		return;
+
+	Elem *curr = head, *prev = 0;
+	while(curr!=0)
+	{
+		if(id==curr->pcb->getId())
 		{
-			if(id==curr->pcb->getId())
-			{
-				if(prev==0) {
-					takeFirst();
-				}
-				else {
-					if(curr!=0) {
-						prev->next = curr->next;
-						delete curr;
-					}
-				}
-				break;
+			if(prev==0) {
+				takeFirst();
 			}
-			prev = curr;
-			curr = curr->next;
+			else {
+				if(curr!=0) {
+					if(curr == tail)
+						tail = prev;
+					prev->next = curr->next;
+					delete curr;
+				}
+			}
+			break;
 		}
+		prev = curr;
+		curr = curr->next;
+	}
 }

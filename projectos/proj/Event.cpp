@@ -14,7 +14,9 @@ Event::Event(IVTNo ivtNo) {
 	Helper* helper = new Helper();
 	helper->function = eventConstruct;
 	helper->ivtNo = ivtNo;
+	lock;
 	systemCall(helper);
+	unlock;
 	kernelEvId = helper->id;
 	delete helper;
 }
@@ -23,7 +25,9 @@ Event::~Event() {
 	Helper* helper = new Helper();
 	helper->function = eventDestruct;
 	helper->id = kernelEvId;
+	lock;
 	systemCall(helper);
+	unlock;
 	delete helper;
 }
 
@@ -31,7 +35,9 @@ void Event::wait() {
 	Helper* helper = new Helper();
 	helper->function = eventWait;
 	helper->id = kernelEvId;
+	lock;
 	systemCall(helper);
+	unlock;
 	delete helper;
 }
 
@@ -39,7 +45,9 @@ void Event::signal() {
 	Helper* helper = new Helper();
 	helper->function = eventSignal;
 	helper->id = kernelEvId;
+	lock;
 	systemCall(helper);
+	unlock;
 	delete helper;
 }
 
