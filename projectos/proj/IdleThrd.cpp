@@ -14,7 +14,7 @@ IdleThread::~IdleThread() {
 void IdleThread::run() {
 	while (1) {
 		for(int i = 0; i<100000;i++)
-			for(int j = 0; j<10000;j++);
+			for(int j = 0; j<1000;j++);
 		cout<<"Idle"<<endl;
 	}
 }

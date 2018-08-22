@@ -47,7 +47,7 @@ void KeyboardEvent::run()
 	char scancode, status, znak; 
 	
 	while (!theEnd) {
-      
+
 		event9.wait();
 		do{
 			status = inportb(0x64); // ocitava statusni reg. sa 64h
@@ -58,6 +58,9 @@ void KeyboardEvent::run()
 	
 				if (scancode==-127){
 					theEnd = 1;
+					intLock
+					cout<<"KEYEVENT::ESC pressed"<<endl<<endl<<endl;
+					intUnlock
 					myBuffer->append('!'); //finished
 				}else {
 					if (scancode&0x80) {

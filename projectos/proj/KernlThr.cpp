@@ -12,7 +12,6 @@
 #include "KernlSem.h"
 #include "Semaphor.h"
 
-
 volatile int KernelThread::kernelThreadRequestedSwitch = 0;
 KernelThread* KernelThread::kernelThread = 0;
 volatile Helper* KernelThread::helper = 0;

@@ -22,6 +22,7 @@ Event::Event(IVTNo ivtNo) {
 }
 
 Event::~Event() {
+	cout<<"E::Destructor"<<endl;
 	Helper* helper = new Helper();
 	helper->function = eventDestruct;
 	helper->id = kernelEvId;

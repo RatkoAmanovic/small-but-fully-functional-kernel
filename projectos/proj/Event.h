@@ -15,14 +15,13 @@ void interrupt interruptRoutine##ivtNo(...) {\
 newIVTEntry##ivtNo.signal();\
 if (useOldRoutine == 1)\
 newIVTEntry##ivtNo.runOldRoutine();\
-}
-
+};\
 
 class Event {
-	friend class IVTEntry;
+
 	public:
 		Event (IVTNo ivtNo);
-		~Event ();
+		virtual ~Event ();
 		void wait ();
 		unsigned getId();
 	protected:

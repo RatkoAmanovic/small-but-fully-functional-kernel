@@ -81,26 +81,29 @@ KernelSem* KernelSemList::getById(int id) {
 }
 
 void KernelSemList::removeById(int id) {
-	if(isEmpty()) return;
-		Elem *curr = head, *prev = 0;
-		while(curr!=0)
+	if(isEmpty())
+		return;
+
+	Elem *curr = head, *prev = 0;
+
+	while(curr!=0) {
+		if(id==curr->semaphore->getId())
 		{
-			if(id==curr->semaphore->getId())
-			{
-				if(prev==0) {
-					takeFirst();
-				}
-				else {
-					if(curr!=0) {
-						if(curr == tail)
-							tail = prev;
-						prev->next = curr->next;
-						delete curr;
-					}
-				}
-				break;
+			if(prev==0) {
+				takeFirst();
 			}
-			prev = curr;
-			curr = curr->next;
+			else {
+				if(curr!=0) {
+					if(curr == tail)
+						tail = prev;
+					prev->next = curr->next;
+					//curr->semaphore->~KernelSem();
+					delete curr;
+				}
+			}
+			break;
 		}
+		prev = curr;
+		curr = curr->next;
+	}
 }

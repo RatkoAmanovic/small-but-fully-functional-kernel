@@ -17,6 +17,7 @@ KernelSem::KernelSem(int init) : value(init) {
 }
 
 KernelSem::~KernelSem() {
+	cout<<"KS::Destruct"<<endl;
 	PCB *pcb = blockedList.takeFirst();
 	while(pcb!=0)
 		pcb = blockedList.takeFirst();

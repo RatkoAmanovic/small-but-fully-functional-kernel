@@ -14,7 +14,7 @@ class KernelEv {
 		friend class KernelThread;
 
 		KernelEv(IVTNo ivtNo);
-		~KernelEv();
+		virtual ~KernelEv();
 		void wait();
 		void signal();
 		unsigned getId();

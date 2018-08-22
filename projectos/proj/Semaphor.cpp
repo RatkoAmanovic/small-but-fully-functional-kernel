@@ -18,6 +18,7 @@ Semaphore::Semaphore(int init) {
 }
 
 Semaphore::~Semaphore() {
+	cout<<"S::Destruct"<<endl;
 	Helper* helper = new Helper();
 	helper->function = semaphoreDestruct;
 	helper->id = kernelSemId;

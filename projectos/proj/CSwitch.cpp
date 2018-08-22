@@ -4,6 +4,7 @@
 #include "SCHEDULE.H"
 #include "IdleThrd.h"
 #include "Thread.h"
+#include "KernlThr.h"
 
 volatile int ContextSwitch::switchRequested = 0;
 volatile Time ContextSwitch::counter = 0;
@@ -27,54 +28,14 @@ void interrupt ContextSwitch::timer(...) {
 			tick();
 			oldTimer();
 			PCB::sleepingList.tick();
+			return;
 		}
 		else {
-			#ifndef BCC_BLOCK_IGNORE
-				asm{
-					mov tempStackSegment, ss
-					mov tempStackPointer, sp
-					mov tempBasePointer, bp
-				}
-			#endif
-
-
-			PCB::running->stackSegment = tempStackSegment;
-			PCB::running->stackPointer = tempStackPointer;
-			PCB::running->basePointer = tempBasePointer;
-
-			PCB::running->localLock = PCB::globalLock;
-
-			if(PCB::running->status == PCB::RUNNING && PCB::running->thread != IdleThread::getIdleThread()){
-				PCB::running->setStatus(PCB::READY);
-				Scheduler::put(PCB::running);
-			}
-
-			PCB::running = Scheduler::get();
-
-			if(PCB::running == 0)
-				PCB::running = PCB::getPCBbyId(PCB::getIdleThreadId());
-
-			PCB::running->setStatus(PCB::RUNNING);
-			PCB::globalLock = PCB::running->localLock;
-			counter = PCB::running->timeSlice;
-
-			tempStackSegment = PCB::running->stackSegment;
-			tempStackPointer = PCB::running->stackPointer;
-			tempBasePointer = PCB::running->basePointer;
-
-			counter = PCB::running->timeSlice;
-
-			#ifndef BCC_BLOCK_IGNORE
-				asm{
-					mov ss, tempStackSegment
-					mov sp, tempStackPointer
-					mov bp, tempBasePointer
-				}
-			#endif
-
+			dispatch();
 			switchRequested = 0;
 			return;
 		}
+
 	}
 
 	if(!switchRequested) {
@@ -90,52 +51,9 @@ void interrupt ContextSwitch::timer(...) {
 	}
 
 	if((counter == 0 && PCB::globalLock == 0) || switchRequested) {
-
-			#ifndef BCC_BLOCK_IGNORE
-				asm{
-					mov tempStackSegment, ss
-					mov tempStackPointer, sp
-					mov tempBasePointer, bp
-				}
-			#endif
-
-
-			PCB::running->stackSegment = tempStackSegment;
-			PCB::running->stackPointer = tempStackPointer;
-			PCB::running->basePointer = tempBasePointer;
-
-			PCB::running->localLock = PCB::globalLock;
-
-			if(PCB::running->status == PCB::RUNNING && PCB::running->thread != IdleThread::getIdleThread()){
-				PCB::running->setStatus(PCB::READY);
-				Scheduler::put(PCB::running);
-			}
-
-			PCB::running = Scheduler::get();
-
-			if(PCB::running == 0)
-				PCB::running = PCB::getPCBbyId(PCB::getIdleThreadId());
-
-			PCB::running->setStatus(PCB::RUNNING);
-			PCB::globalLock = PCB::running->localLock;
-			counter = PCB::running->timeSlice;
-
-			tempStackSegment = PCB::running->stackSegment;
-			tempStackPointer = PCB::running->stackPointer;
-			tempBasePointer = PCB::running->basePointer;
-
-			counter = PCB::running->timeSlice;
-
-			#ifndef BCC_BLOCK_IGNORE
-				asm{
-					mov ss, tempStackSegment
-					mov sp, tempStackPointer
-					mov bp, tempBasePointer
-				}
-			#endif
-
-			switchRequested = 0;
-			return;
+		dispatch();
+		switchRequested = 0;
+		return;
 	}
 
 }

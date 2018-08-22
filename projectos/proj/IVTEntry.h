@@ -5,15 +5,17 @@
 
 class KernelEv;
 class IVTable;
+
 class IVTEntry {
 	public:
 
 		friend class KernelEv;
 
-		IVTEntry(IVTNo ivtNo, void interrupt (*newRoutine)(...));
+		IVTEntry(IVTNo ivtNo, InterruptFunction newRoutine);
 		~IVTEntry();
 		void signal();
 		void runOldRoutine();
+		void restore();
 	private:
 		IVTNo ivtNo;
 		InterruptFunction oldRoutine;

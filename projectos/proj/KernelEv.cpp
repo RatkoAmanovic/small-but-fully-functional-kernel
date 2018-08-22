@@ -20,7 +20,10 @@ KernelEv::KernelEv(IVTNo ivtNo) : ivtNo(ivtNo), value(0) {
 	IVTEntry::ivTable->getIVTEntry(ivtNo)->kernelEvent = this;
 }
 
-KernelEv::~KernelEv() {}
+KernelEv::~KernelEv() {
+	IVTEntry::ivTable->ivTable[ivtNo]->restore();
+	IVTEntry::ivTable->ivTable[ivtNo]->kernelEvent = 0;
+}
 
 void KernelEv::wait() {
 	if(myPCB == PCB::running)
